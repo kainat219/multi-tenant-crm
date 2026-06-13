@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lead Conversions | Super Admin CRM</title>
+  <link rel="stylesheet" href="../theme.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px; background-color: var(--maroon-dark); color: var(--white);
+      padding: 30px 0; position: fixed; top: 0; left: 0;
+      height: 100vh; overflow-y: auto; z-index: 100;
+    }
+    .sidebar-logo {
+      font-size: 22px; font-weight: 800; padding: 0 25px 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: var(--white); text-decoration: none; display: block;
+    }
+    .sidebar-logo span { color: var(--pink-border); }
+    .sidebar-menu { padding: 20px 0; }
+    .menu-label {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.4);
+      padding: 10px 25px 5px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .menu-item {
+      display: flex; align-items: center; gap: 12px; padding: 13px 25px;
+      color: rgba(255,255,255,0.8); text-decoration: none;
+      font-size: 14px; font-weight: 500; transition: all 0.2s;
+    }
+    .menu-item:hover, .menu-item.active {
+      background-color: rgba(255,255,255,0.1); color: var(--white);
+      border-left: 3px solid var(--pink-border);
+    }
+    .menu-item .icon { font-size: 18px; }
+
+    /* Main */
+    .main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; }
+
+    /* Topbar */
+    .topbar {
+      background-color: var(--white); padding: 18px 35px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--pink-border); position: sticky; top: 0; z-index: 99;
+    }
+    .topbar h1 { font-size: 22px; font-weight: 700; color: var(--maroon-dark); }
+    .topbar-right { display: flex; align-items: center; gap: 15px; }
+    .logout-btn {
+      background-color: var(--maroon-dark); color: var(--white);
+      border: none; padding: 9px 18px; border-radius: 8px;
+      cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s;
+    }
+    .logout-btn:hover { background-color: var(--maroon-hover); }
+
+    /* Content */
+    .content { padding: 35px; flex: 1; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .page-header h2 { font-size: 20px; font-weight: 700; color: var(--maroon-dark); }
+
+    /* Stats grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 25px; }
+    .stat-card {
+      background-color: var(--white); border-radius: 15px; padding: 25px;
+      border: 1px solid var(--pink-border); box-shadow: 0 3px 15px var(--shadow);
+      display: flex; align-items: center; gap: 18px;
+    }
+    .stat-icon {
+      font-size: 32px; width: 60px; height: 60px;
+      background-color: var(--pink-light); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stat-info h3 { font-size: 26px; font-weight: 800; color: var(--maroon-dark); }
+    .stat-info p { font-size: 13px; color: var(--gray); margin-top: 3px; }
+    .stat-green h3 { color: var(--success); }
+    .stat-warning h3 { color: var(--warning); }
+
+    /* Filter */
+    .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; }
+    .filter-bar input {
+      padding: 10px 14px; border: 1px solid var(--pink-border);
+      border-radius: 8px; font-size: 14px; outline: none; font-family: 'Poppins', sans-serif;
+    }
+    .filter-bar input:focus { border-color: var(--maroon-dark); }
+
+    /* Buttons */
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    .btn-danger { background-color: var(--error); color: var(--white); padding: 6px 12px; font-size: 12px; }
+
+    /* Table */
+    .section-card {
+      background-color: var(--white); border-radius: 15px;
+      border: 1px solid var(--pink-border); box-shadow: 0 3px 15px var(--shadow); overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background-color: var(--pink-bg); }
+    th { padding: 14px 18px; text-align: left; font-size: 13px; font-weight: 600; color: var(--maroon-dark); }
+    td { padding: 14px 18px; font-size: 13px; color: var(--black); border-bottom: 1px solid var(--pink-border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background-color: var(--pink-bg); }
+
+    .badge-green { background: #d4edda; color: #155724; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--gray); }
+    .empty-state div { font-size: 48px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">🏢 Tenant<span>CRM</span></a>
+  <div class="sidebar-menu">
+    <div class="menu-label">Main</div>
+    <a href="dashboard.html" class="menu-item"><span class="icon">📊</span> Dashboard</a>
+    <div class="menu-label">Management</div>
+    <a href="tenants.html" class="menu-item"><span class="icon">🏢</span> Tenants</a>
+    <a href="users.html" class="menu-item"><span class="icon">👥</span> Users</a>
+    <a href="plans.html" class="menu-item"><span class="icon">💳</span> Plans</a>
+    <a href="billing.html" class="menu-item"><span class="icon">💰</span> Billing</a>
+    <div class="menu-label">CRM Data</div>
+    <a href="accounts.html" class="menu-item"><span class="icon">🏦</span> Accounts</a>
+    <a href="contacts.html" class="menu-item"><span class="icon">👤</span> Contacts</a>
+    <a href="leads.html" class="menu-item"><span class="icon">🎯</span> Leads</a>
+    <a href="opportunities.html" class="menu-item"><span class="icon">💼</span> Opportunities</a>
+    <a href="tickets.html" class="menu-item"><span class="icon">🎫</span> Tickets</a>
+    <div class="menu-label">System</div>
+    <a href="audit.html" class="menu-item"><span class="icon">🔍</span> Audit Logs</a>
+    <a href="notifications.html" class="menu-item"><span class="icon">🔔</span> Notifications</a>
+    <a href="customFields.html" class="menu-item"><span class="icon">⚙️</span> Custom Fields</a>
+    <a href="emailIntegrations.html" class="menu-item"><span class="icon">📧</span> Email Integrations</a>
+    <a href="leadConversions.html" class="menu-item active"><span class="icon">🔄</span> Lead Conversions</a>
+    <div class="menu-label">Account</div>
+    <a href="#" class="menu-item" onclick="logout()"><span class="icon">🚪</span> Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1>🔄 All Lead Conversions</h1>
+    <div class="topbar-right">
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <h2>Conversion Overview</h2>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🔄</div>
+        <div class="stat-info"><h3 id="totalCount">0</h3><p>Total Conversions</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-info stat-green"><h3 id="thisMonth">0</h3><p>This Month</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💼</div>
+        <div class="stat-info stat-warning"><h3 id="withOpp">0</h3><p>With Opportunity</p></div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <input type="number" id="filterTenant" placeholder="Filter by Tenant ID" oninput="loadConversions()" />
+    </div>
+
+    <div class="section-card">
+      <table>
+        <thead>
+          <tr><th>Tenant</th><th>Lead Name</th><th>Contact</th><th>Account</th><th>Opportunity</th><th>Converted By</th><th>Date</th><th>Notes</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="convTable">
+          <tr><td colspan="9"><div class="empty-state"><div>🔄</div>Loading...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function loadConversions() {
+    const tenantId = document.getElementById('filterTenant').value || 1;
+    try {
+      const res = await fetch(`http://localhost:3000/leadconversions/tenant/${tenantId}`);
+      const data = await res.json();
+      document.getElementById('totalCount').textContent = data.length;
+      const now = new Date();
+      document.getElementById('thisMonth').textContent = data.filter(d => {
+        const dt = new Date(d.converted_at);
+        return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear();
+      }).length;
+      document.getElementById('withOpp').textContent = data.filter(d => d.opportunity_id).length;
+      const tbody = document.getElementById('convTable');
+      if (!data.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div>🔄</div>No conversions found</div></td></tr>'; return; }
+      tbody.innerHTML = data.map(c => `
+        <tr>
+          <td>${c.tenant_id}</td>
+          <td><strong>${c.lead_name||'N/A'}</strong></td>
+          <td><span class="badge badge-green">${c.contact_name||'-'}</span></td>
+          <td>${c.account_name||'-'}</td>
+          <td>${c.opportunity_name||'-'}</td>
+          <td>${c.converted_by_user||'N/A'}</td>
+          <td>${c.converted_at ? new Date(c.converted_at).toLocaleDateString():'-'}</td>
+          <td>${c.notes||'-'}</td>
+          <td><button class="btn btn-danger" onclick="deleteConversion(${c.conversion_id})">🗑</button></td>
+        </tr>`).join('');
+    } catch(err) { console.error(err); }
+  }
+  async function deleteConversion(id) { if(!confirm('Delete?')) return; await fetch(`http://localhost:3000/leadconversions/delete/${id}`, {method:'DELETE'}); loadConversions(); }
+  function logout() { window.location.href = '../../login.html'; }
+  loadConversions();
+</script>
+</body>
+</html>

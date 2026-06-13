@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lead Conversions | Sales Agent CRM</title>
+  <link rel="stylesheet" href="../theme.css">
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .sidebar {
+      width: 260px; background-color: var(--maroon-dark); color: var(--white);
+      padding: 30px 0; position: fixed; top: 0; left: 0;
+      height: 100vh; overflow-y: auto; z-index: 100;
+    }
+    .sidebar-logo {
+      font-size: 22px; font-weight: 800; padding: 0 25px 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: var(--white); text-decoration: none; display: block;
+    }
+    .sidebar-logo span { color: var(--pink-border); }
+    .sidebar-menu { padding: 20px 0; }
+    .menu-label {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.4);
+      padding: 10px 25px 5px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .menu-item {
+      display: flex; align-items: center; gap: 12px; padding: 13px 25px;
+      color: rgba(255,255,255,0.8); text-decoration: none;
+      font-size: 14px; font-weight: 500; transition: all 0.2s;
+    }
+    .menu-item:hover, .menu-item.active {
+      background-color: rgba(255,255,255,0.1); color: var(--white);
+      border-left: 3px solid var(--pink-border);
+    }
+    .menu-item .icon { font-size: 18px; }
+
+    .main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; }
+    .topbar {
+      background-color: var(--white); padding: 18px 35px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--pink-border); position: sticky; top: 0; z-index: 99;
+    }
+    .topbar h1 { font-size: 22px; font-weight: 700; color: var(--maroon-dark); }
+    .topbar-right { display: flex; align-items: center; gap: 15px; }
+    .logout-btn {
+      background-color: var(--maroon-dark); color: var(--white);
+      border: none; padding: 9px 18px; border-radius: 8px;
+      cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s;
+    }
+    .logout-btn:hover { background-color: var(--maroon-hover); }
+
+    .content { padding: 35px; flex: 1; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .page-header h2 { font-size: 20px; font-weight: 700; color: var(--maroon-dark); }
+
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; margin-bottom: 25px; }
+    .stat-card {
+      background-color: var(--white); border-radius: 15px; padding: 25px;
+      border: 1px solid var(--pink-border); box-shadow: 0 3px 15px var(--shadow);
+      display: flex; align-items: center; gap: 18px;
+    }
+    .stat-icon {
+      font-size: 32px; width: 60px; height: 60px;
+      background-color: var(--pink-light); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stat-info h3 { font-size: 26px; font-weight: 800; color: var(--maroon-dark); }
+    .stat-info p { font-size: 13px; color: var(--gray); margin-top: 3px; }
+    .stat-green h3 { color: var(--success); }
+
+    /* Buttons */
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+    .btn-primary { background-color: var(--maroon-dark); color: var(--white); }
+    .btn-primary:hover { background-color: var(--maroon-hover); }
+    .btn-danger { background-color: var(--error); color: var(--white); padding: 6px 12px; font-size: 12px; }
+    .btn-cancel { background-color: var(--gray-light); color: var(--black); padding: 10px 20px; }
+
+    /* Table */
+    .section-card {
+      background-color: var(--white); border-radius: 15px;
+      border: 1px solid var(--pink-border); box-shadow: 0 3px 15px var(--shadow);
+      overflow: hidden; margin-bottom: 24px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background-color: var(--pink-bg); }
+    th { padding: 14px 18px; text-align: left; font-size: 13px; font-weight: 600; color: var(--maroon-dark); }
+    td { padding: 14px 18px; font-size: 13px; color: var(--black); border-bottom: 1px solid var(--pink-border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background-color: var(--pink-bg); }
+
+    .badge-green { background: #d4edda; color: #155724; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 16px; padding: 30px;
+      width: 500px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+      border: 1px solid var(--pink-border); box-shadow: 0 10px 40px var(--shadow);
+    }
+    .modal h2 { font-size: 18px; font-weight: 700; color: var(--maroon-dark); margin-bottom: 8px; }
+    .modal p { font-size: 13px; color: var(--gray); margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 6px; }
+    .form-group select, .form-group textarea {
+      width: 100%; padding: 10px 14px;
+      border: 1px solid var(--pink-border); border-radius: 8px;
+      font-size: 14px; outline: none; font-family: 'Poppins', sans-serif;
+    }
+    .form-group select:focus, .form-group textarea:focus { border-color: var(--maroon-dark); }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--gray); }
+    .empty-state div { font-size: 48px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">🎯 Sales<span>Agent</span></a>
+  <div class="sidebar-menu">
+    <div class="menu-label">CRM</div>
+    <a href="dashboard.html" class="menu-item"><span class="icon">📊</span> Dashboard</a>
+    <a href="leads.html" class="menu-item"><span class="icon">🎯</span> My Leads</a>
+    <a href="opportunities.html" class="menu-item"><span class="icon">💼</span> My Opportunities</a>
+    <a href="contacts.html" class="menu-item"><span class="icon">👤</span> Contacts</a>
+    <a href="activities.html" class="menu-item"><span class="icon">📋</span> Activities</a>
+    <a href="tickets.html" class="menu-item"><span class="icon">🎫</span> My Tickets</a>
+    <div class="menu-label">Tools</div>
+    <a href="notifications.html" class="menu-item"><span class="icon">🔔</span> Notifications</a>
+    <a href="emailIntegrations.html" class="menu-item"><span class="icon">📧</span> Email Integrations</a>
+    <a href="leadConversions.html" class="menu-item active"><span class="icon">🔄</span> Lead Conversions</a>
+    <div class="menu-label">Account</div>
+    <a href="#" class="menu-item" onclick="logout()"><span class="icon">🚪</span> Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1>🔄 My Lead Conversions</h1>
+    <div class="topbar-right">
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <h2>Your Conversions</h2>
+      <button class="btn btn-primary" onclick="openModal()">+ Convert Lead</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🔄</div>
+        <div class="stat-info"><h3 id="totalCount">0</h3><p>My Conversions</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-info stat-green"><h3 id="thisMonth">0</h3><p>This Month</p></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <table>
+        <thead>
+          <tr><th>Lead Name</th><th>Contact</th><th>Account</th><th>Opportunity</th><th>Date</th><th>Notes</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="convTable">
+          <tr><td colspan="7"><div class="empty-state"><div>🔄</div>Loading...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>🔄 Convert Lead</h2>
+    <p>Select a lead to convert and link it to existing records.</p>
+    <div class="form-group"><label>Select Lead</label>
+      <select id="lead_id"><option value="">-- Select Lead --</option></select>
+    </div>
+    <div class="form-group"><label>Link to Contact</label>
+      <select id="contact_id"><option value="">-- Select Contact --</option></select>
+    </div>
+    <div class="form-group"><label>Link to Account</label>
+      <select id="account_id"><option value="">-- Select Account --</option></select>
+    </div>
+    <div class="form-group"><label>Link to Opportunity</label>
+      <select id="opportunity_id"><option value="">-- Select Opportunity --</option></select>
+    </div>
+    <div class="form-group"><label>Notes</label><textarea id="notes" rows="3" placeholder="Conversion notes..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="convertLead()">✅ Convert</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const userId = user.user_id || 1;
+  const tenantId = user.tenant_id || 1;
+
+  async function loadConversions() {
+    try {
+      const res = await fetch(`http://localhost:3000/leadconversions/tenant/${tenantId}`);
+      const data = await res.json();
+      const myData = data.filter(d => d.converted_by === userId || true);
+      document.getElementById('totalCount').textContent = myData.length;
+      const now = new Date();
+      document.getElementById('thisMonth').textContent = myData.filter(d => {
+        const dt = new Date(d.converted_at);
+        return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear();
+      }).length;
+      const tbody = document.getElementById('convTable');
+      if (!myData.length) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div>🔄</div>No conversions yet</div></td></tr>'; return; }
+      tbody.innerHTML = myData.map(c => `
+        <tr>
+          <td><strong>${c.lead_name||'N/A'}</strong></td>
+          <td><span class="badge badge-green">${c.contact_name||'-'}</span></td>
+          <td>${c.account_name||'-'}</td>
+          <td>${c.opportunity_name||'-'}</td>
+          <td>${c.converted_at ? new Date(c.converted_at).toLocaleDateString():'-'}</td>
+          <td>${c.notes||'-'}</td>
+          <td><button class="btn btn-danger" onclick="deleteConversion(${c.conversion_id})">🗑</button></td>
+        </tr>`).join('');
+    } catch(err) { console.error(err); }
+  }
+
+  async function loadDropdowns() {
+    try {
+      const [leadsRes, contactsRes, accountsRes, oppsRes] = await Promise.all([
+        fetch(`http://localhost:3000/leads/agent/${userId}`),
+        fetch(`http://localhost:3000/contacts/tenant/${tenantId}`),
+        fetch(`http://localhost:3000/accounts/tenant/${tenantId}`),
+        fetch(`http://localhost:3000/opportunities/user/${userId}`)
+      ]);
+      const [leads, contacts, accounts, opps] = await Promise.all([leadsRes.json(), contactsRes.json(), accountsRes.json(), oppsRes.json()]);
+      const leadSel = document.getElementById('lead_id');
+      leads.filter(l => l.status !== 'converted').forEach(l => { leadSel.innerHTML += `<option value="${l.lead_id}">${l.first_name} ${l.last_name}</option>`; });
+      const contactSel = document.getElementById('contact_id');
+      contacts.forEach(c => { contactSel.innerHTML += `<option value="${c.contact_id}">${c.first_name} ${c.last_name}</option>`; });
+      const accountSel = document.getElementById('account_id');
+      accounts.forEach(a => { accountSel.innerHTML += `<option value="${a.account_id}">${a.account_name}</option>`; });
+      const oppSel = document.getElementById('opportunity_id');
+      opps.forEach(o => { oppSel.innerHTML += `<option value="${o.opportunity_id}">${o.opportunity_name}</option>`; });
+    } catch(err) { console.error(err); }
+  }
+
+  async function convertLead() {
+    const lead_id = document.getElementById('lead_id').value;
+    if (!lead_id) { alert('Please select a lead!'); return; }
+    const body = {
+      tenant_id: tenantId, lead_id: parseInt(lead_id),
+      contact_id: parseInt(document.getElementById('contact_id').value)||null,
+      account_id: parseInt(document.getElementById('account_id').value)||null,
+      opportunity_id: parseInt(document.getElementById('opportunity_id').value)||null,
+      converted_by: userId,
+      notes: document.getElementById('notes').value||null
+    };
+    const res = await fetch('http://localhost:3000/leadconversions/convert', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+    const result = await res.json();
+    alert(result.message || 'Lead converted!');
+    closeModal(); loadConversions();
+  }
+
+  async function deleteConversion(id) { if(!confirm('Delete?')) return; await fetch(`http://localhost:3000/leadconversions/delete/${id}`, {method:'DELETE'}); loadConversions(); }
+  function openModal() { document.getElementById('modal').classList.add('open'); loadDropdowns(); }
+  function closeModal() { document.getElementById('modal').classList.remove('open'); }
+  function logout() { window.location.href = '../../login.html'; }
+  loadConversions();
+</script>
+</body>
+</html>

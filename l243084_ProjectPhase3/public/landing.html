@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TenantCRM — Multi Tenant CRM System</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    /* ===== Hero Section ===== */
+    .hero {
+      background: linear-gradient(135deg, var(--maroon-dark) 0%, var(--maroon-light) 100%);
+      color: var(--white);
+      padding: 120px 50px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.1); }
+    }
+
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .hero h1 span {
+      color: var(--pink-border);
+    }
+
+    .hero p {
+      font-size: 18px;
+      margin-bottom: 40px;
+      opacity: 0.9;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* ===== Stats Section ===== */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 60px 50px;
+      background-color: var(--white);
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-item h2 {
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--maroon-dark);
+    }
+
+    .stat-item p {
+      font-size: 15px;
+      color: var(--gray);
+      margin-top: 5px;
+    }
+
+    /* ===== Features Section ===== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .feature-card {
+      background-color: var(--white);
+      border-radius: 15px;
+      padding: 35px 25px;
+      text-align: center;
+      box-shadow: 0 5px 20px var(--shadow);
+      border: 1px solid var(--pink-border);
+      transition: transform 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .feature-icon {
+      font-size: 45px;
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--maroon-dark);
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* ===== How It Works ===== */
+    .steps {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .step {
+      text-align: center;
+      max-width: 220px;
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      background-color: var(--maroon-dark);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 auto 20px;
+    }
+
+    .step h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--maroon-dark);
+      margin-bottom: 10px;
+    }
+
+    .step p {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    .step-arrow {
+      font-size: 30px;
+      color: var(--maroon-dark);
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* ===== CTA Section ===== */
+    .cta {
+      background: linear-gradient(135deg, var(--maroon-dark) 0%, var(--maroon-light) 100%);
+      color: var(--white);
+      text-align: center;
+      padding: 80px 50px;
+    }
+
+    .cta h2 {
+      font-size: 38px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .cta p {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 35px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    /* ===== Roles Section ===== */
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .role-card {
+      border-radius: 15px;
+      padding: 35px 25px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .role-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .role-card.admin {
+      background-color: var(--maroon-dark);
+      color: var(--white);
+    }
+
+    .role-card.tenant {
+      background-color: var(--white);
+      border: 2px solid var(--maroon-dark);
+      color: var(--maroon-dark);
+    }
+
+    .role-card.agent {
+      background-color: var(--pink-light);
+      border: 2px solid var(--pink-border);
+      color: var(--maroon-dark);
+    }
+
+    .role-icon {
+      font-size: 45px;
+      margin-bottom: 15px;
+    }
+
+    .role-card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .role-card p {
+      font-size: 13px;
+      line-height: 1.7;
+      opacity: 0.85;
+    }
+
+    .role-card.admin p {
+      color: rgba(255,255,255,0.85);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="landing.html" class="logo">🏢 Tenant<span>CRM</span></a>
+    <div class="nav-links">
+      <a href="landing.html">Home</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="login.html" class="btn-outline">Login</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>The Smart <span>Multi-Tenant</span><br>CRM Platform</h1>
+    <p>Manage your tenants, leads, contacts, and opportunities all in one place. Built for businesses that scale.</p>
+    <div class="hero-buttons">
+      <a href="pricing.html" class="btn-white">💰 View Pricing</a>
+      <a href="login.html"   class="btn-outline">🔑 Login Now</a>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <div class="stats">
+    <div class="stat-item">
+      <h2>10+</h2>
+      <p>Active Tenants</p>
+    </div>
+    <div class="stat-item">
+      <h2>60+</h2>
+      <p>Users Managed</p>
+    </div>
+    <div class="stat-item">
+      <h2>100+</h2>
+      <p>Leads Tracked</p>
+    </div>
+    <div class="stat-item">
+      <h2>6</h2>
+      <p>Subscription Plans</p>
+    </div>
+    <div class="stat-item">
+      <h2>100%</h2>
+      <p>Data Isolation</p>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <section class="section" style="background-color: var(--pink-bg);">
+    <h2 class="section-title">Why Choose TenantCRM?</h2>
+    <p class="section-subtitle">Everything you need to manage your business in one platform</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>Multi-Tenant Security</h3>
+        <p>Each tenant's data is completely isolated. No tenant can access another tenant's information.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Role Based Access</h3>
+        <p>Super Admin, Tenant Admin, and Sales Agent each see only what they need to see.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Powerful Dashboard</h3>
+        <p>Real time analytics and charts to track your leads, opportunities, and revenue.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Lead Management</h3>
+        <p>Track leads from first contact to conversion with full status management.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💼</div>
+        <h3>Opportunity Pipeline</h3>
+        <p>Visualize your sales pipeline and track deals from open to won or lost.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Subscription Plans</h3>
+        <p>Flexible plans from Free Trial to Enterprise to suit every business size.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section" style="background-color: var(--white);">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-subtitle">Get started in just 3 simple steps</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Choose a Plan</h3>
+        <p>Select the subscription plan that fits your business needs and budget.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Setup Your Team</h3>
+        <p>Add your users, assign roles and start managing your accounts and contacts.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Grow Your Business</h3>
+        <p>Track leads, manage opportunities and close deals faster than ever before.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roles Section -->
+  <section class="section" style="background-color: var(--pink-bg);">
+    <h2 class="section-title">Built For Every Role</h2>
+    <p class="section-subtitle">Different interfaces for different needs</p>
+    <div class="roles-grid">
+      <div class="role-card admin">
+        <div class="role-icon">👑</div>
+        <h3>Super Admin</h3>
+        <p>Full control over all tenants, users, subscription plans, and system wide analytics.</p>
+      </div>
+      <div class="role-card tenant">
+        <div class="role-icon">🏢</div>
+        <h3>Tenant Admin</h3>
+        <p>Manage your own team, accounts, contacts, leads and opportunities independently.</p>
+      </div>
+      <div class="role-card agent">
+        <div class="role-icon">💼</div>
+        <h3>Sales Agent</h3>
+        <p>Focus on your assigned leads and opportunities to close deals efficiently.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <h2>Ready To Get Started?</h2>
+    <p>Join businesses already using TenantCRM to manage their operations</p>
+    <div class="cta-buttons">
+      <a href="pricing.html" class="btn-white">💰 View Pricing</a>
+      <a href="login.html"   class="btn-outline">🔑 Login Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 <span>TenantCRM</span> — Multi Tenant CRM System | Built by <span>Kainat Afzal & Khadija Rao</span></p>
+  </footer>
+
+</body>
+</html>

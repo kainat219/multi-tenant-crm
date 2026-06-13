@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — TenantCRM</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    /* ===== Hero ===== */
+    .pricing-hero {
+      background: linear-gradient(135deg, var(--maroon-dark) 0%, var(--maroon-light) 100%);
+      color: var(--white);
+      padding: 80px 50px;
+      text-align: center;
+    }
+
+    .pricing-hero h1 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    .pricing-hero h1 span {
+      color: var(--pink-border);
+    }
+
+    .pricing-hero p {
+      font-size: 17px;
+      opacity: 0.9;
+      max-width: 550px;
+      margin: 0 auto;
+    }
+
+    /* ===== Plans Grid ===== */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .plan-card {
+      background-color: var(--white);
+      border-radius: 15px;
+      padding: 35px 25px;
+      text-align: center;
+      box-shadow: 0 5px 20px var(--shadow);
+      border: 2px solid var(--pink-border);
+      transition: transform 0.3s;
+      position: relative;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .plan-card.popular {
+      border: 2px solid var(--maroon-dark);
+      transform: scale(1.05);
+    }
+
+    .plan-card.popular:hover {
+      transform: scale(1.05) translateY(-8px);
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--maroon-dark);
+      color: var(--white);
+      padding: 5px 20px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .plan-icon {
+      font-size: 45px;
+      margin-bottom: 15px;
+    }
+
+    .plan-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--maroon-dark);
+      margin-bottom: 10px;
+    }
+
+    .plan-price {
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--maroon-dark);
+      margin-bottom: 5px;
+    }
+
+    .plan-price span {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--gray);
+    }
+
+    .plan-divider {
+      height: 1px;
+      background-color: var(--pink-border);
+      margin: 20px 0;
+    }
+
+    .plan-features {
+      list-style: none;
+      margin-bottom: 25px;
+      text-align: left;
+    }
+
+    .plan-features li {
+      font-size: 14px;
+      color: var(--black);
+      padding: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--pink-bg);
+    }
+
+    .plan-features li .check {
+      color: var(--success);
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .plan-features li .cross {
+      color: #ccc;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .plan-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .plan-btn-primary {
+      background-color: var(--maroon-dark);
+      color: var(--white);
+    }
+
+    .plan-btn-primary:hover {
+      background-color: var(--maroon-hover);
+    }
+
+    .plan-btn-outline {
+      background-color: transparent;
+      color: var(--maroon-dark);
+      border: 2px solid var(--maroon-dark);
+    }
+
+    .plan-btn-outline:hover {
+      background-color: var(--maroon-dark);
+      color: var(--white);
+    }
+
+    /* ===== Comparison Table ===== */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--white);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px var(--shadow);
+      margin-top: 20px;
+    }
+
+    .comparison-table thead {
+      background-color: var(--maroon-dark);
+      color: var(--white);
+    }
+
+    .comparison-table thead th {
+      padding: 18px 15px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .comparison-table thead th:first-child {
+      text-align: left;
+    }
+
+    .comparison-table tbody tr {
+      border-bottom: 1px solid var(--pink-border);
+      transition: background 0.2s;
+    }
+
+    .comparison-table tbody tr:hover {
+      background-color: var(--pink-bg);
+    }
+
+    .comparison-table tbody td {
+      padding: 15px;
+      font-size: 14px;
+      text-align: center;
+      color: var(--black);
+    }
+
+    .comparison-table tbody td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: var(--maroon-dark);
+    }
+
+    /* ===== FAQ Section ===== */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .faq-item {
+      background-color: var(--white);
+      border-radius: 12px;
+      padding: 25px;
+      border: 1px solid var(--pink-border);
+      box-shadow: 0 3px 10px var(--shadow);
+    }
+
+    .faq-item h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--maroon-dark);
+      margin-bottom: 10px;
+    }
+
+    .faq-item p {
+      font-size: 14px;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* ===== CTA ===== */
+    .cta {
+      background: linear-gradient(135deg, var(--maroon-dark) 0%, var(--maroon-light) 100%);
+      color: var(--white);
+      text-align: center;
+      padding: 80px 50px;
+    }
+
+    .cta h2 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .cta p {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 35px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="landing.html" class="logo">🏢 Tenant<span>CRM</span></a>
+    <div class="nav-links">
+      <a href="landing.html">Home</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="login.html" class="btn-outline">Login</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="pricing-hero">
+    <h1>Simple <span>Transparent</span> Pricing</h1>
+    <p>Choose the plan that fits your business. Upgrade or downgrade anytime.</p>
+  </section>
+
+  <!-- Plans -->
+  <section class="section" style="background-color: var(--pink-bg);">
+    <h2 class="section-title">Our Plans</h2>
+    <p class="section-subtitle">From startups to enterprises — we have a plan for everyone</p>
+    <div class="plans-grid">
+
+      <!-- Free Trial -->
+      <div class="plan-card">
+        <div class="plan-icon">🆓</div>
+        <div class="plan-name">Free Trial</div>
+        <div class="plan-price">$0 <span>/month</span></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> 2 Users</li>
+          <li><span class="check">✓</span> 20 Contacts</li>
+          <li><span class="check">✓</span> Basic Contact Management</li>
+          <li><span class="check">✓</span> 14 Days Access</li>
+          <li><span class="cross">✗</span> Reports</li>
+          <li><span class="cross">✗</span> API Access</li>
+          <li><span class="cross">✗</span> Priority Support</li>
+        </ul>
+        <a href="register.html" class="plan-btn plan-btn-outline">Get Started Free</a>
+      </div>
+
+      <!-- Starter -->
+      <div class="plan-card">
+        <div class="plan-icon">🚀</div>
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$1,000 <span>/month</span></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> 5 Users</li>
+          <li><span class="check">✓</span> 100 Contacts</li>
+          <li><span class="check">✓</span> User Management</li>
+          <li><span class="check">✓</span> Contact Management</li>
+          <li><span class="check">✓</span> Basic Reporting</li>
+          <li><span class="cross">✗</span> API Access</li>
+          <li><span class="cross">✗</span> Priority Support</li>
+        </ul>
+        <a href="register.html" class="plan-btn plan-btn-outline">Get Started</a>
+      </div>
+
+      <!-- Standard -->
+      <div class="plan-card">
+        <div class="plan-icon">⭐</div>
+        <div class="plan-name">Standard</div>
+        <div class="plan-price">$3,000 <span>/month</span></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> 10 Users</li>
+          <li><span class="check">✓</span> 500 Contacts</li>
+          <li><span class="check">✓</span> Leads Management</li>
+          <li><span class="check">✓</span> Email Integration</li>
+          <li><span class="check">✓</span> Basic Analytics</li>
+          <li><span class="cross">✗</span> API Access</li>
+          <li><span class="cross">✗</span> Priority Support</li>
+        </ul>
+        <a href="register.html" class="plan-btn plan-btn-outline">Get Started</a>
+      </div>
+
+      <!-- Pro -->
+      <div class="plan-card popular">
+        <div class="popular-badge">⭐ Most Popular</div>
+        <div class="plan-icon">💼</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$7,000 <span>/month</span></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> 25 Users</li>
+          <li><span class="check">✓</span> 2,000 Contacts</li>
+          <li><span class="check">✓</span> Full CRM Features</li>
+          <li><span class="check">✓</span> Sales Pipeline</li>
+          <li><span class="check">✓</span> Support Tickets</li>
+          <li><span class="check">✓</span> Advanced Analytics</li>
+          <li><span class="cross">✗</span> API Access</li>
+        </ul>
+        <a href="register.html" class="plan-btn plan-btn-primary">Get Started</a>
+      </div>
+
+      <!-- Premium -->
+      <div class="plan-card">
+        <div class="plan-icon">💎</div>
+        <div class="plan-name">Premium</div>
+        <div class="plan-price">$12,000 <span>/month</span></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> 50 Users</li>
+          <li><span class="check">✓</span> 5,000 Contacts</li>
+          <li><span class="check">✓</span> Advanced Analytics</li>
+          <li><span class="check">✓</span> Priority Support</li>
+          <li><span class="check">✓</span> Custom Dashboards</li>
+          <li><span class="check">✓</span> Email Integration</li>
+          <li><span class="cross">✗</span> API Access</li>
+        </ul>
+        <a href="register.html" class="plan-btn plan-btn-outline">Get Started</a>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="plan-card">
+        <div class="plan-icon">🏆</div>
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price">$20,000 <span>/month</span></div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> 100 Users</li>
+          <li><span class="check">✓</span> Unlimited Contacts</li>
+          <li><span class="check">✓</span> All Features</li>
+          <li><span class="check">✓</span> API Access</li>
+          <li><span class="check">✓</span> Custom Fields</li>
+          <li><span class="check">✓</span> Audit Logs</li>
+          <li><span class="check">✓</span> Priority Support</li>
+        </ul>
+        <a href="register.html" class="plan-btn plan-btn-primary">Get Started</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="section" style="background-color: var(--white);">
+    <h2 class="section-title">Plan Comparison</h2>
+    <p class="section-subtitle">See exactly what you get with each plan</p>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Free</th>
+          <th>Starter</th>
+          <th>Standard</th>
+          <th>Pro</th>
+          <th>Premium</th>
+          <th>Enterprise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Max Users</td>
+          <td>2</td><td>5</td><td>10</td><td>25</td><td>50</td><td>100</td>
+        </tr>
+        <tr>
+          <td>Max Contacts</td>
+          <td>20</td><td>100</td><td>500</td><td>2,000</td><td>5,000</td><td>Unlimited</td>
+        </tr>
+        <tr>
+          <td>Basic Reports</td>
+          <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+        </tr>
+        <tr>
+          <td>Advanced Analytics</td>
+          <td>❌</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
+        </tr>
+        <tr>
+          <td>Sales Pipeline</td>
+          <td>❌</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td>
+        </tr>
+        <tr>
+          <td>Email Integration</td>
+          <td>❌</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+        </tr>
+        <tr>
+          <td>API Access</td>
+          <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td>
+        </tr>
+        <tr>
+          <td>Custom Fields</td>
+          <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td>
+        </tr>
+        <tr>
+          <td>Audit Logs</td>
+          <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td>
+        </tr>
+        <tr>
+          <td>Priority Support</td>
+          <td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" style="background-color: var(--pink-bg);">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <p class="section-subtitle">Got questions? We have answers</p>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <h3>Can I upgrade my plan anytime?</h3>
+        <p>Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Is my data safe and isolated?</h3>
+        <p>Absolutely. Each tenant's data is completely isolated. No other tenant can access your data.</p>
+      </div>
+      <div class="faq-item">
+        <h3>How does the Free Trial work?</h3>
+        <p>You get full access to basic features for 14 days with up to 2 users and 20 contacts.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What payment methods do you accept?</h3>
+        <p>We accept credit cards, debit cards, and bank transfers for all subscription plans.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Ready To Get Started?</h2>
+    <p>Join businesses already using TenantCRM</p>
+    <a href="login.html" class="btn-white">🔑 Login Now</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 <span>TenantCRM</span> — Multi Tenant CRM System | Built by <span>Kainat Afzal & Khadija Rao</span></p>
+  </footer>
+
+</body>
+</html>

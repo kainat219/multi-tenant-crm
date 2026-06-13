@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Agent Dashboard — TenantCRM</title>
+  <link rel="stylesheet" href="../theme.css">
+
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .sidebar {
+      width: 260px;
+      background-color: var(--maroon-dark);
+      color: var(--white);
+      padding: 30px 0;
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      font-size: 22px;
+      font-weight: 800;
+      padding: 0 25px 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: var(--white);
+      text-decoration: none;
+      display: block;
+    }
+
+    .sidebar-logo span { color: var(--pink-border); }
+
+    .menu-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      padding: 10px 25px 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 25px;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background-color: rgba(255,255,255,0.1);
+      border-left: 3px solid var(--pink-border);
+      color: white;
+    }
+
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      background: var(--white);
+      padding: 18px 35px;
+      border-bottom: 1px solid var(--pink-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .content { padding: 35px; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--pink-border);
+      border-radius: 15px;
+      padding: 25px;
+      display: flex;
+      gap: 15px;
+      box-shadow: 0 3px 15px var(--shadow);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--pink-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-size: 28px;
+    }
+
+    .stat-info h3 {
+      font-size: 26px;
+      color: var(--maroon-dark);
+      font-weight: 800;
+    }
+
+    .stat-info p {
+      font-size: 13px;
+      color: var(--gray);
+    }
+
+    .section-card {
+      background: var(--white);
+      border-radius: 15px;
+      border: 1px solid var(--pink-border);
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+
+    .section-card-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--pink-border);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      background: var(--pink-bg);
+      padding: 14px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .data-table td {
+      padding: 14px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--pink-border);
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">🎯 Sales<span>Agent</span></a>
+
+  <div class="sidebar-menu">
+    <div class="menu-label">Main</div>
+    <a href="dashboard.html" class="menu-item active">📊 Dashboard</a>
+
+    <div class="menu-label">CRM</div>
+    <a href="leads.html"         class="menu-item">🎯 My Leads</a>
+    <a href="opportunities.html" class="menu-item">💼 My Opportunities</a>
+    <a href="contacts.html"      class="menu-item">👤 Contacts</a>
+    <a href="activities.html"    class="menu-item">📋 Activities</a>
+    <a href="tickets.html"       class="menu-item">🎫 My Tickets</a>
+
+    <div class="menu-label">Account</div>
+    <a href="#" class="menu-item" onclick="logout()">
+    <a href="notifications.html"    class="menu-item">🔔 Notifications</a>
+    <a href="emailIntegrations.html" class="menu-item">📧 Email Integrations</a>
+    <a href="leadConversions.html"   class="menu-item">🔄 Lead Conversions</a>🚪 Logout</a>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <div class="topbar">
+    <h2>🎯 Sales Agent Dashboard</h2>
+    <div>
+      <strong id="userName">Loading...</strong>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-info">
+          <h3 id="myLeads">0</h3>
+          <p>My Leads</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">💼</div>
+        <div class="stat-info">
+          <h3 id="myOpps">0</h3>
+          <p>My Opportunities</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-info">
+          <h3 id="wonDeals">0</h3>
+          <p>Won Deals</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📞</div>
+        <div class="stat-info">
+          <h3 id="contacts">0</h3>
+          <p>Contacts</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Leads -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <h3>🎯 My Recent Leads</h3>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="leadsTable">
+          <tr><td colspan="3">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- My Opportunities -->
+    <div class="section-card">
+      <div class="section-card-header">
+        <h3>💼 My Opportunities</h3>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="oppsTable">
+          <tr><td colspan="3">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const BASE = 'http://localhost:3000';
+
+const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+if (!user || user.role !== 'sales_agent') {
+  window.location.href = '../login.html';
+} else {
+  document.getElementById('userName').textContent =
+    user.first_name + ' ' + user.last_name;
+}
+
+async function loadDashboard() {
+  const uid = user.user_id;
+
+  try {
+    const [leads, opps, contacts] = await Promise.all([
+      fetch(`${BASE}/leads/agent/${uid}`).then(r => r.json()),
+      fetch(`${BASE}/opportunities/user/${uid}`).then(r => r.json()),
+      fetch(`${BASE}/contacts/user/${uid}`).then(r => r.json())
+    ]);
+
+    document.getElementById('myLeads').textContent = leads.length;
+    document.getElementById('myOpps').textContent = opps.length;
+    document.getElementById('contacts').textContent = contacts.length;
+
+    document.getElementById('wonDeals').textContent =
+      opps.filter(o => o.status === 'won').length;
+
+    document.getElementById('leadsTable').innerHTML =
+      leads.slice(0,5).map(l => `
+        <tr>
+          <td>${l.first_name} ${l.last_name}</td>
+          <td>${l.company || '-'}</td>
+          <td>${l.status}</td>
+        </tr>`).join('');
+
+    document.getElementById('oppsTable').innerHTML =
+      opps.slice(0,5).map(o => `
+        <tr>
+          <td>${o.opportunity_name}</td>
+          <td>$${Number(o.deal_value||0).toLocaleString()}</td>
+          <td>${o.status}</td>
+        </tr>`).join('');
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function logout() {
+  localStorage.removeItem('user');
+  window.location.href = '../login.html';
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>

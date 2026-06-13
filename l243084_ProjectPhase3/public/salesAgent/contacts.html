@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Contacts — Sales Agent</title>
+  <link rel="stylesheet" href="../theme.css">
+  <style>
+    .sidebar { width:260px;background:var(--maroon-dark);position:fixed;height:100vh;padding:30px 0;overflow-y:auto; }
+    .sidebar-logo { font-size:22px;color:white;padding:0 25px 30px;display:block;text-decoration:none;font-weight:800;border-bottom:1px solid rgba(255,255,255,0.1); }
+    .sidebar-logo span { color:var(--pink-border); }
+    .menu-label { font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);padding:10px 25px 5px;text-transform:uppercase;letter-spacing:1px; }
+    .menu-item { display:flex;align-items:center;gap:12px;padding:13px 25px;color:rgba(255,255,255,0.8);text-decoration:none;font-size:14px;transition:0.2s; }
+    .menu-item:hover,.menu-item.active { background:rgba(255,255,255,0.1);border-left:3px solid var(--pink-border);color:white; }
+    .main { margin-left:260px;display:flex;flex-direction:column;min-height:100vh; }
+    .topbar { background:var(--white);padding:18px 35px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--pink-border);position:sticky;top:0;z-index:99; }
+    .topbar h1 { font-size:22px;font-weight:700;color:var(--maroon-dark); }
+    .topbar-right { display:flex;align-items:center;gap:15px; }
+    .user-info { text-align:right;font-size:13px; }
+    .user-info strong { display:block;color:var(--maroon-dark);font-weight:700; }
+    .user-info span { color:var(--gray); }
+    .logout-btn { background:var(--maroon-dark);color:white;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600; }
+    .logout-btn:hover { background:var(--maroon-hover); }
+    .content { padding:35px; }
+    .page-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:25px; }
+    .page-header h2 { font-size:24px;font-weight:700;color:var(--maroon-dark); }
+    .table-card { background:var(--white);border-radius:15px;border:1px solid var(--pink-border);box-shadow:0 3px 15px var(--shadow);overflow:hidden; }
+    .table-toolbar { padding:18px 25px;border-bottom:1px solid var(--pink-border);display:flex;gap:10px;align-items:center; }
+    .search-input { padding:9px 15px;border:2px solid var(--pink-border);border-radius:8px;font-size:14px;outline:none;width:280px; }
+    .search-input:focus { border-color:var(--maroon-dark); }
+    .data-table { width:100%;border-collapse:collapse; }
+    .data-table thead { background:var(--pink-bg); }
+    .data-table thead th { padding:14px 18px;font-size:13px;font-weight:600;color:var(--maroon-dark);text-align:left; }
+    .data-table tbody tr { border-bottom:1px solid var(--pink-border);transition:background 0.2s; }
+    .data-table tbody tr:hover { background:var(--pink-bg); }
+    .data-table tbody td { padding:14px 18px;font-size:13px;color:var(--black); }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">🎯 Sales<span>Agent</span></a>
+  <div class="sidebar-menu">
+    <div class="menu-label">Main</div>
+    <a href="dashboard.html" class="menu-item">📊 Dashboard</a>
+    <div class="menu-label">CRM</div>
+    <a href="leads.html"         class="menu-item">🎯 My Leads</a>
+    <a href="opportunities.html" class="menu-item">💼 My Opportunities</a>
+    <a href="contacts.html"      class="menu-item active">👤 Contacts</a>
+    <a href="activities.html"    class="menu-item">📋 Activities</a>
+    <a href="tickets.html"       class="menu-item">🎫 My Tickets</a>
+    <div class="menu-label">Account</div>
+    <a href="#" class="menu-item" onclick="logout()">
+    <a href="notifications.html"    class="menu-item">🔔 Notifications</a>
+    <a href="emailIntegrations.html" class="menu-item">📧 Email Integrations</a>
+    <a href="leadConversions.html"   class="menu-item">🔄 Lead Conversions</a>🚪 Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1>👤 My Contacts</h1>
+    <div class="topbar-right">
+      <div class="user-info">
+        <strong id="userName">Loading...</strong>
+        <span>Sales Agent</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">
+    <a href="notifications.html"    class="menu-item">🔔 Notifications</a>
+    <a href="emailIntegrations.html" class="menu-item">📧 Email Integrations</a>
+    <a href="leadConversions.html"   class="menu-item">🔄 Lead Conversions</a>🚪 Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <h2>Assigned Contacts</h2>
+    </div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <input type="text" class="search-input" placeholder="🔍 Search contacts..." oninput="filterTable(this.value)">
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Name</th><th>Email</th><th>Phone</th>
+            <th>Job Title</th><th>Account</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="contactsTable">
+          <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray)">⏳ Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const BASE = 'http://localhost:3000';
+  let allContacts = [];
+
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  if (!user || user.role !== 'sales_agent') {
+    window.location.href = '../login.html';
+  } else {
+    document.getElementById('userName').textContent = user.first_name + ' ' + user.last_name;
+  }
+
+  async function loadContacts() {
+    try {
+      const res    = await fetch(`${BASE}/contacts/user/${user.user_id}`);
+      allContacts  = await res.json();
+      renderTable(allContacts);
+    } catch(err) {
+      document.getElementById('contactsTable').innerHTML =
+        '<tr><td colspan="7" style="text-align:center;color:red">❌ Failed to load</td></tr>';
+    }
+  }
+
+  function renderTable(data) {
+    if (!data.length) {
+      document.getElementById('contactsTable').innerHTML =
+        '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--gray)">No contacts found</td></tr>';
+      return;
+    }
+    document.getElementById('contactsTable').innerHTML = data.map((c, i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td><strong>${c.first_name} ${c.last_name}</strong></td>
+        <td>${c.email||'-'}</td>
+        <td>${c.phone||'-'}</td>
+        <td>${c.job_title||'-'}</td>
+        <td>${c.account_name||'-'}</td>
+        <td>${c.is_active
+          ? '<span class="badge badge-success">Active</span>'
+          : '<span class="badge badge-error">Inactive</span>'}</td>
+      </tr>`).join('');
+  }
+
+  function filterTable(val) {
+    renderTable(allContacts.filter(c =>
+      (c.first_name+' '+c.last_name).toLowerCase().includes(val.toLowerCase()) ||
+      (c.email||'').toLowerCase().includes(val.toLowerCase()) ||
+      (c.account_name||'').toLowerCase().includes(val.toLowerCase())
+    ));
+  }
+
+  function logout() { localStorage.removeItem('user'); window.location.href = '../login.html'; }
+
+  loadContacts();
+</script>
+</body>
+</html>

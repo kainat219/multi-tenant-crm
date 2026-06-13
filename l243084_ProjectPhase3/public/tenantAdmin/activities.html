@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activities — Tenant Admin</title>
+  <link rel="stylesheet" href="../theme.css">
+  <style>
+    .sidebar { width:260px;background:var(--maroon-dark);position:fixed;height:100vh;padding:30px 0;overflow-y:auto; }
+    .sidebar-logo { font-size:22px;color:white;padding:0 25px 30px;display:block;text-decoration:none;font-weight:800;border-bottom:1px solid rgba(255,255,255,0.1); }
+    .sidebar-logo span { color:var(--pink-border); }
+    .menu-label { font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);padding:10px 25px 5px;text-transform:uppercase;letter-spacing:1px; }
+    .menu-item { display:flex;align-items:center;gap:12px;padding:13px 25px;color:rgba(255,255,255,0.8);text-decoration:none;font-size:14px;transition:0.2s; }
+    .menu-item:hover,.menu-item.active { background:rgba(255,255,255,0.1);border-left:3px solid var(--pink-border);color:white; }
+    .main { margin-left:260px;display:flex;flex-direction:column;min-height:100vh; }
+    .topbar { background:var(--white);padding:18px 35px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--pink-border);position:sticky;top:0;z-index:99; }
+    .topbar h1 { font-size:22px;font-weight:700;color:var(--maroon-dark); }
+    .topbar-right { display:flex;align-items:center;gap:15px; }
+    .user-info { text-align:right;font-size:13px; }
+    .user-info strong { display:block;color:var(--maroon-dark);font-weight:700; }
+    .user-info span { color:var(--gray); }
+    .logout-btn { background:var(--maroon-dark);color:white;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600; }
+    .logout-btn:hover { background:var(--maroon-hover); }
+    .content { padding:35px; }
+    .page-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:25px; }
+    .page-header h2 { font-size:24px;font-weight:700;color:var(--maroon-dark); }
+    .success-msg { background:#d4edda;color:#155724;padding:12px 18px;border-radius:8px;font-size:14px;margin-bottom:20px;display:none; }
+    .table-card { background:var(--white);border-radius:15px;border:1px solid var(--pink-border);box-shadow:0 3px 15px var(--shadow);overflow:hidden; }
+    .table-toolbar { padding:18px 25px;border-bottom:1px solid var(--pink-border);display:flex;gap:10px;align-items:center;flex-wrap:wrap; }
+    .search-input { padding:9px 15px;border:2px solid var(--pink-border);border-radius:8px;font-size:14px;outline:none;width:240px; }
+    .search-input:focus { border-color:var(--maroon-dark); }
+    .filter-select { padding:9px 15px;border:2px solid var(--pink-border);border-radius:8px;font-size:14px;outline:none;background:var(--pink-bg); }
+    .data-table { width:100%;border-collapse:collapse; }
+    .data-table thead { background:var(--pink-bg); }
+    .data-table thead th { padding:14px 18px;font-size:13px;font-weight:600;color:var(--maroon-dark);text-align:left; }
+    .data-table tbody tr { border-bottom:1px solid var(--pink-border);transition:background 0.2s; }
+    .data-table tbody tr:hover { background:var(--pink-bg); }
+    .data-table tbody td { padding:14px 18px;font-size:13px;color:var(--black); }
+    .action-btn { padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;margin-right:4px; }
+    .btn-delete { background:#f8d7da;color:#721c24; }
+    .modal-overlay { display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center; }
+    .modal-overlay.show { display:flex; }
+    .modal { background:var(--white);border-radius:15px;padding:35px;width:540px;max-width:95%;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto; }
+    .modal h3 { font-size:20px;font-weight:700;color:var(--maroon-dark);margin-bottom:20px; }
+    .form-row { display:grid;grid-template-columns:1fr 1fr;gap:15px; }
+    .form-group { margin-bottom:15px; }
+    .form-group label { display:block;font-size:13px;font-weight:600;color:var(--maroon-dark);margin-bottom:6px; }
+    .form-group input,.form-group select,.form-group textarea { width:100%;padding:11px 15px;border:2px solid var(--pink-border);border-radius:8px;font-size:14px;outline:none;background:var(--pink-bg); }
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus { border-color:var(--maroon-dark);background:white; }
+    .form-group textarea { resize:vertical;min-height:80px; }
+    .modal-btns { display:flex;gap:10px;margin-top:20px;justify-content:flex-end; }
+    .btn-cancel { padding:10px 20px;border:2px solid var(--maroon-dark);background:transparent;color:var(--maroon-dark);border-radius:8px;cursor:pointer;font-size:14px;font-weight:600; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">🏢 Tenant<span>CRM</span></a>
+  <div class="sidebar-menu">
+    <div class="menu-label">Main</div>
+    <a href="dashboard.html"     class="menu-item">📊 Dashboard</a>
+    <div class="menu-label">My Team</div>
+    <a href="users.html"         class="menu-item">👥 Users</a>
+    <div class="menu-label">CRM</div>
+    <a href="accounts.html"      class="menu-item">🏦 Accounts</a>
+    <a href="contacts.html"      class="menu-item">👤 Contacts</a>
+    <a href="leads.html"         class="menu-item">🎯 Leads</a>
+    <a href="opportunities.html" class="menu-item">💼 Opportunities</a>
+    <a href="tickets.html"       class="menu-item">🎫 Tickets</a>
+    <a href="activities.html"    class="menu-item active">📋 Activities</a>
+    <div class="menu-label">Account</div>
+          <a href="notifications.html"    class="menu-item"><span class="icon">🔔</span> Notifications</a>
+      <a href="customFields.html"      class="menu-item"><span class="icon">⚙️</span> Custom Fields</a>
+      <a href="emailIntegrations.html" class="menu-item"><span class="icon">📧</span> Email Integrations</a>
+      <a href="leadConversions.html"   class="menu-item"><span class="icon">🔄</span> Lead Conversions</a>
+      <a href="#" class="menu-item" onclick="logout()">🚪 Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1>📋 Team Activities</h1>
+    <div class="topbar-right">
+      <div class="user-info">
+        <strong id="userName">Loading...</strong>
+        <span id="companyName">Tenant Admin</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <h2>All Activities</h2>
+      <button class="btn-primary" onclick="openModal()">➕ Log Activity</button>
+    </div>
+
+    <div class="success-msg" id="successMsg"></div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <input type="text" class="search-input" placeholder="🔍 Search activities..." oninput="filterTable(this.value)">
+        <select class="filter-select" onchange="filterByType(this.value)">
+          <option value="">All Types</option>
+          <option value="call">Call</option>
+          <option value="email">Email</option>
+          <option value="meeting">Meeting</option>
+          <option value="task">Task</option>
+          <option value="note">Note</option>
+        </select>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Type</th><th>Subject</th><th>Agent</th>
+            <th>Related To</th><th>Due Date</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="activitiesTable">
+          <tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray)">⏳ Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>📋 Log Activity</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Activity Type</label>
+        <select id="activityType">
+          <option value="call">📞 Call</option>
+          <option value="email">📧 Email</option>
+          <option value="meeting">🤝 Meeting</option>
+          <option value="task">✅ Task</option>
+          <option value="note">📝 Note</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Assign To Agent</label>
+        <select id="assignedUserId">
+          <option value="">Select Agent</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Related To</label>
+        <select id="relatedTo">
+          <option value="lead">Lead</option>
+          <option value="contact">Contact</option>
+          <option value="opportunity">Opportunity</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Related ID</label>
+        <input type="number" id="relatedId" placeholder="e.g. 5">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Subject</label>
+      <input type="text" id="subject" placeholder="Brief subject">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="description" placeholder="Activity details..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Due Date</label>
+        <input type="datetime-local" id="dueDate">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="isCompleted">
+          <option value="0">Pending</option>
+          <option value="1">Completed</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveActivity()">💾 Save Activity</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const BASE = 'http://localhost:3000';
+  let allActivities = [];
+
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  if (!user || user.role !== 'tenant_admin') {
+    window.location.href = '../login.html';
+  } else {
+    document.getElementById('userName').textContent    = user.first_name + ' ' + user.last_name;
+    document.getElementById('companyName').textContent = user.company_name || 'Tenant Admin';
+  }
+
+  async function loadActivities() {
+    try {
+      const res     = await fetch(`${BASE}/activities/tenant/${user.tenant_id}`);
+      allActivities = await res.json();
+      renderTable(allActivities);
+    } catch(err) {
+      document.getElementById('activitiesTable').innerHTML =
+        '<tr><td colspan="8" style="text-align:center;color:red">❌ Failed to load</td></tr>';
+    }
+  }
+
+  const typeIcon = { call:'📞', email:'📧', meeting:'🤝', task:'✅', note:'📝' };
+
+  function renderTable(data) {
+    if (!data.length) {
+      document.getElementById('activitiesTable').innerHTML =
+        '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray)">No activities found</td></tr>';
+      return;
+    }
+    document.getElementById('activitiesTable').innerHTML = data.map((a, i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td><span class="badge badge-maroon">${typeIcon[a.activity_type]||''} ${a.activity_type}</span></td>
+        <td><strong>${a.subject||'-'}</strong></td>
+        <td>${a.user_name||'-'}</td>
+        <td>${a.related_to} #${a.related_id}</td>
+        <td>${a.due_date ? new Date(a.due_date).toLocaleString() : '-'}</td>
+        <td>${a.is_completed
+          ? '<span class="badge badge-success">✅ Done</span>'
+          : '<span class="badge badge-warning">⏳ Pending</span>'}</td>
+        <td>
+          <button class="action-btn btn-delete" onclick="deleteActivity(${a.activity_id})">🗑</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function filterTable(val) {
+    renderTable(allActivities.filter(a =>
+      (a.subject||'').toLowerCase().includes(val.toLowerCase()) ||
+      (a.user_name||'').toLowerCase().includes(val.toLowerCase())
+    ));
+  }
+
+  function filterByType(val) {
+    renderTable(val ? allActivities.filter(a => a.activity_type === val) : allActivities);
+  }
+
+  async function loadUsers() {
+    const res   = await fetch(`${BASE}/users/tenant/${user.tenant_id}`);
+    const users = await res.json();
+    document.getElementById('assignedUserId').innerHTML =
+      '<option value="">Select Agent</option>' +
+      users.map(u => `<option value="${u.user_id}">${u.first_name} ${u.last_name}</option>`).join('');
+  }
+
+  function openModal() {
+    document.getElementById('subject').value     = '';
+    document.getElementById('description').value = '';
+    document.getElementById('relatedId').value   = '';
+    document.getElementById('dueDate').value     = '';
+    document.getElementById('isCompleted').value = '0';
+    loadUsers();
+    document.getElementById('modalOverlay').classList.add('show');
+  }
+
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+  async function saveActivity() {
+    const userId = document.getElementById('assignedUserId').value;
+    const body = {
+      tenant_id:     user.tenant_id,
+      user_id:       userId || user.user_id,
+      activity_type: document.getElementById('activityType').value,
+      related_to:    document.getElementById('relatedTo').value,
+      related_id:    parseInt(document.getElementById('relatedId').value) || 0,
+      subject:       document.getElementById('subject').value.trim(),
+      description:   document.getElementById('description').value.trim(),
+      due_date:      document.getElementById('dueDate').value || null,
+      is_completed:  document.getElementById('isCompleted').value === '1'
+    };
+    if (!body.subject) { alert('Subject is required!'); return; }
+
+    await fetch(`${BASE}/activities/add`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    closeModal();
+    showSuccess('✅ Activity logged!');
+    loadActivities();
+  }
+
+  async function deleteActivity(id) {
+    if (!confirm('Delete this activity?')) return;
+    await fetch(`${BASE}/activities/delete/${id}`, { method: 'DELETE' });
+    showSuccess('✅ Activity deleted!');
+    loadActivities();
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById('successMsg');
+    el.textContent = msg; el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3000);
+  }
+
+  function logout() { localStorage.removeItem('user'); window.location.href = '../login.html'; }
+
+  loadActivities();
+</script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — TenantCRM</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    body { background-color: var(--pink-bg); min-height: 100vh; display: flex; flex-direction: column; }
+    .register-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 50px 20px; }
+    .register-wrapper { display: grid; grid-template-columns: 1fr 1fr; max-width: 900px; width: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px var(--shadow); }
+    .register-left { background: linear-gradient(135deg, var(--maroon-dark) 0%, var(--maroon-light) 100%); color: var(--white); padding: 60px 40px; display: flex; flex-direction: column; justify-content: center; }
+    .register-left .logo { font-size: 28px; font-weight: 800; margin-bottom: 40px; text-decoration: none; color: var(--white); }
+    .register-left .logo span { color: var(--pink-border); }
+    .register-left h2 { font-size: 30px; font-weight: 700; margin-bottom: 15px; line-height: 1.3; }
+    .register-left p { font-size: 15px; opacity: 0.85; line-height: 1.7; margin-bottom: 30px; }
+    .register-features { list-style: none; }
+    .register-features li { font-size: 14px; padding: 8px 0; display: flex; align-items: center; gap: 12px; opacity: 0.9; }
+    .register-features li span { font-size: 18px; }
+    .register-right { background-color: var(--white); padding: 50px 40px; display: flex; flex-direction: column; justify-content: center; }
+    .register-right h2 { font-size: 26px; font-weight: 700; color: var(--maroon-dark); margin-bottom: 6px; }
+    .register-right p { font-size: 14px; color: var(--gray); margin-bottom: 25px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--maroon-dark); margin-bottom: 6px; }
+    .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 2px solid var(--pink-border); border-radius: 10px; font-size: 15px; color: var(--black); background-color: var(--pink-bg); transition: border 0.3s; outline: none; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--maroon-dark); background-color: var(--white); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .register-btn { width: 100%; padding: 14px; background-color: var(--maroon-dark); color: var(--white); border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; margin-top: 8px; }
+    .register-btn:hover { background-color: var(--maroon-hover); transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow); }
+    .register-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
+    .error-msg { background-color: #f8d7da; color: #721c24; padding: 12px 18px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; display: none; border: 1px solid #f5c6cb; }
+    .success-msg { background-color: #d4edda; color: #155724; padding: 12px 18px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; display: none; border: 1px solid #c3e6cb; }
+    .loading { display: none; text-align: center; color: var(--maroon-dark); font-size: 14px; margin-top: 12px; }
+    .back-link { text-align: center; margin-top: 16px; font-size: 13px; color: var(--gray); }
+    .back-link a { color: var(--maroon-dark); text-decoration: none; font-weight: 600; }
+    .back-link a:hover { text-decoration: underline; }
+    .divider { text-align: center; font-size: 12px; color: var(--gray); margin: 10px 0; }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="landing.html" class="logo">🏢 Tenant<span>CRM</span></a>
+    <div class="nav-links">
+      <a href="landing.html">Home</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="login.html" class="btn-outline">Login</a>
+    </div>
+  </nav>
+
+  <!-- Register Container -->
+  <div class="register-container">
+    <div class="register-wrapper">
+
+      <!-- Left Side -->
+      <div class="register-left">
+        <a href="landing.html" class="logo">🏢 Tenant<span>CRM</span></a>
+        <h2>Start Managing Your Business Today</h2>
+        <p>Create your account and get access to a powerful CRM system built for modern teams.</p>
+        <ul class="register-features">
+          <li><span>🚀</span> Quick Setup in Minutes</li>
+          <li><span>🔐</span> Secure Multi-Tenant Access</li>
+          <li><span>📊</span> Real Time Dashboard</li>
+          <li><span>🎯</span> Lead & Opportunity Tracking</li>
+          <li><span>💼</span> Full Account Management</li>
+          <li><span>🎫</span> Support Ticket System</li>
+        </ul>
+      </div>
+
+      <!-- Right Side -->
+      <div class="register-right">
+        <h2>Create Your Account</h2>
+        <p>Fill in the details below to get started</p>
+
+        <div class="error-msg" id="errorMsg"></div>
+        <div class="success-msg" id="successMsg"></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>👤 First Name</label>
+            <input type="text" id="first_name" placeholder="First name" />
+          </div>
+          <div class="form-group">
+            <label>👤 Last Name</label>
+            <input type="text" id="last_name" placeholder="Last name" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>📧 Email Address</label>
+          <input type="email" id="email" placeholder="your@email.com" />
+        </div>
+
+        <div class="form-group">
+          <label>🔑 Username</label>
+          <input type="text" id="username" placeholder="Choose a username" />
+        </div>
+
+        <div class="form-group">
+          <label>🔒 Password</label>
+          <input type="password" id="password" placeholder="Create a password" />
+        </div>
+
+        <div class="form-group">
+          <label>🏢 Company Name</label>
+          <input type="text" id="company_name" placeholder="Your company name" />
+        </div>
+
+        <div class="form-group">
+          <label>📋 Subscription Plan</label>
+          <select id="plan_id">
+            <option value="">-- Select Plan --</option>
+          </select>
+        </div>
+
+        <button class="register-btn" onclick="handleRegister()">
+          🚀 Create Account
+        </button>
+
+        <div class="loading" id="loading">⏳ Creating your account...</div>
+
+        <div class="divider">— Already have an account? —</div>
+
+        <div class="back-link">
+          <a href="login.html">🔑 Login Here</a> |
+          <a href="landing.html">← Back to Home</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 <span>TenantCRM</span> — Multi Tenant CRM System | Built by <span>Kainat Afzal & Khadija Rao</span></p>
+  </footer>
+
+  <script>
+    const API_BASE =
+      window.location.protocol === 'file:' || (window.location.port && window.location.port !== '3000')
+        ? 'http://localhost:3000'
+        : '';
+
+    function setRegisterEnabled(enabled) {
+      document.querySelector('.register-btn').disabled = !enabled;
+    }
+
+    function setPlanPlaceholder(text) {
+      const sel = document.getElementById('plan_id');
+      sel.innerHTML = '';
+
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = text;
+      option.selected = true;
+      sel.appendChild(option);
+    }
+
+    // Load subscription plans on page load
+    async function loadPlans() {
+      const sel = document.getElementById('plan_id');
+      const errorMsg = document.getElementById('errorMsg');
+
+      setRegisterEnabled(false);
+      setPlanPlaceholder('Loading plans...');
+
+      try {
+        const res = await fetch(`${API_BASE}/plans`);
+        const plans = await res.json();
+
+        if (!res.ok) {
+          throw new Error(plans.error || 'Failed to load subscription plans.');
+        }
+
+        if (!Array.isArray(plans)) {
+          throw new Error('Invalid subscription plans response.');
+        }
+
+        if (!plans.length) {
+          throw new Error('No subscription plans found. Add plans from the Super Admin plans page first.');
+        }
+
+        setPlanPlaceholder('-- Select Plan --');
+
+        plans.forEach(p => {
+          const option = document.createElement('option');
+          option.value = p.plan_id;
+          option.textContent = `${p.plan_name} - $${p.price_monthly}/month`;
+          sel.appendChild(option);
+        });
+
+        errorMsg.style.display = 'none';
+        setRegisterEnabled(true);
+      } catch(err) {
+        setPlanPlaceholder('Plans unavailable');
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = err.message;
+        console.error('Could not load plans:', err);
+      }
+    }
+
+    async function handleRegister() {
+      const first_name   = document.getElementById('first_name').value.trim();
+      const last_name    = document.getElementById('last_name').value.trim();
+      const email        = document.getElementById('email').value.trim();
+      const username     = document.getElementById('username').value.trim();
+      const password     = document.getElementById('password').value.trim();
+      const company_name = document.getElementById('company_name').value.trim();
+      const plan_id      = document.getElementById('plan_id').value;
+
+      const errorMsg   = document.getElementById('errorMsg');
+      const successMsg = document.getElementById('successMsg');
+      const loading    = document.getElementById('loading');
+
+      // Validation
+      if (!first_name || !last_name || !email || !username || !password || !company_name || !plan_id) {
+        errorMsg.style.display = 'block';
+        errorMsg.textContent   = 'Please fill in all fields.';
+        return;
+      }
+
+      errorMsg.style.display  = 'none';
+      successMsg.style.display = 'none';
+      loading.style.display   = 'block';
+      setRegisterEnabled(false);
+
+      try {
+        // Step 1: Create Tenant
+        const tenantRes = await fetch(`${API_BASE}/tenants/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            company_name,
+            domain: company_name.toLowerCase().replace(/\s+/g, '') + Date.now() + '.com',
+            contact_email: email,
+            subscription_plan_id: parseInt(plan_id)
+          })
+        });
+        const tenantData = await tenantRes.json();
+
+        if (!tenantData.tenant_id) {
+          throw new Error(tenantData.message || tenantData.error || 'Failed to create company.');
+        }
+
+        // Step 2: Create Admin User for that Tenant
+        const userRes = await fetch(`${API_BASE}/users/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tenant_id:     tenantData.tenant_id,
+            username,
+            email,
+            password_hash: password,
+            first_name,
+            last_name,
+            role:          'tenant_admin'
+          })
+        });
+        const userData = await userRes.json();
+
+        if (!userRes.ok) {
+          throw new Error(userData.message || userData.error || 'Failed to create user.');
+        }
+
+        loading.style.display = 'none';
+
+        successMsg.style.display = 'block';
+        successMsg.textContent   = 'Account created successfully! Redirecting to login...';
+
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+
+      } catch (err) {
+        loading.style.display  = 'none';
+        errorMsg.style.display = 'block';
+        errorMsg.textContent   = err.message;
+        setRegisterEnabled(true);
+      }
+    }
+
+    loadPlans();
+  </script>
+
+</body>
+</html>

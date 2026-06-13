@@ -1,0 +1,226 @@
+/* ===== Import Google Font ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ===== Root Colors ===== */
+:root {
+  --maroon-dark:   #6d0b24;
+  --maroon-light:  #8b1a35;
+  --maroon-hover:  #4a0618;
+  --pink-bg:       #fff0f3;
+  --pink-border:   #f8c8d4;
+  --pink-light:    #ffe4ec;
+  --white:         #ffffff;
+  --black:         #1a1a1a;
+  --gray:          #666666;
+  --gray-light:    #f5f5f5;
+  --success:       #2dc653;
+  --warning:       #f77f00;
+  --error:         #e94560;
+  --shadow:        rgba(109, 11, 36, 0.15);
+}
+
+/* ===== General Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: var(--pink-bg);
+  color: var(--black);
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--pink-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--maroon-dark);
+  border-radius: 10px;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  background-color: var(--maroon-dark);
+  padding: 18px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 20px var(--shadow);
+}
+
+.navbar .logo {
+  color: var(--white);
+  font-size: 24px;
+  font-weight: 700;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar .logo span {
+  color: var(--pink-border);
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--white);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--pink-border);
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+  background-color: var(--maroon-dark);
+  color: var(--white);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  background-color: var(--maroon-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px var(--shadow);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--white);
+  border: 2px solid var(--white);
+  padding: 12px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-outline:hover {
+  background-color: var(--white);
+  color: var(--maroon-dark);
+  transform: translateY(-2px);
+}
+
+.btn-white {
+  background-color: var(--white);
+  color: var(--maroon-dark);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-white:hover {
+  background-color: var(--pink-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px var(--shadow);
+}
+
+/* ===== Section ===== */
+.section {
+  padding: 80px 50px;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--maroon-dark);
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  text-align: center;
+  font-size: 16px;
+  color: var(--gray);
+  margin-bottom: 50px;
+}
+
+/* ===== Cards ===== */
+.card {
+  background-color: var(--white);
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 5px 20px var(--shadow);
+  border: 1px solid var(--pink-border);
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* ===== Footer ===== */
+footer {
+  background-color: var(--maroon-dark);
+  color: var(--white);
+  text-align: center;
+  padding: 30px 50px;
+  font-size: 14px;
+}
+
+footer span {
+  color: var(--pink-border);
+}
+
+/* ===== Badges ===== */
+.badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.badge-maroon {
+  background-color: var(--pink-light);
+  color: var(--maroon-dark);
+}

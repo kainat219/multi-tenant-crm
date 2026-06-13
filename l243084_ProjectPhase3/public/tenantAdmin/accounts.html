@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accounts — Tenant Admin</title>
+  <link rel="stylesheet" href="../theme.css">
+  <style>
+    .sidebar {
+      width: 260px; background-color: var(--maroon-dark);
+      padding: 30px 0; position: fixed; top: 0; left: 0;
+      height: 100vh; overflow-y: auto; z-index: 100;
+    }
+    .sidebar-logo {
+      font-size: 22px; font-weight: 800; padding: 0 25px 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: var(--white); text-decoration: none; display: block;
+    }
+    .sidebar-logo span { color: var(--pink-border); }
+    .menu-label {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.4);
+      padding: 10px 25px 5px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .menu-item {
+      display: flex; align-items: center; gap: 12px; padding: 13px 25px;
+      color: rgba(255,255,255,0.8); text-decoration: none;
+      font-size: 14px; font-weight: 500; transition: all 0.2s;
+    }
+    .menu-item:hover, .menu-item.active {
+      background-color: rgba(255,255,255,0.1); color: var(--white);
+      border-left: 3px solid var(--pink-border);
+    }
+    .menu-item .icon { font-size: 18px; }
+    .main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; }
+    .topbar {
+      background-color: var(--white); padding: 18px 35px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--pink-border); position: sticky; top: 0; z-index: 99;
+    }
+    .topbar h1 { font-size: 22px; font-weight: 700; color: var(--maroon-dark); }
+    .topbar-right { display: flex; align-items: center; gap: 15px; }
+    .user-info { text-align: right; font-size: 13px; }
+    .user-info strong { display: block; color: var(--maroon-dark); font-weight: 700; }
+    .user-info span { color: var(--gray); }
+    .logout-btn {
+      background-color: var(--maroon-dark); color: var(--white); border: none;
+      padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;
+    }
+    .logout-btn:hover { background-color: var(--maroon-hover); }
+    .content { padding: 35px; }
+    .page-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+    }
+    .page-header h2 { font-size: 24px; font-weight: 700; color: var(--maroon-dark); }
+    .success-msg {
+      background-color: #d4edda; color: #155724; padding: 12px 18px;
+      border-radius: 8px; font-size: 14px; margin-bottom: 20px; display: none;
+    }
+    .table-card {
+      background-color: var(--white); border-radius: 15px;
+      border: 1px solid var(--pink-border);
+      box-shadow: 0 3px 15px var(--shadow); overflow: hidden;
+    }
+    .table-toolbar {
+      padding: 18px 25px; border-bottom: 1px solid var(--pink-border);
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    }
+    .search-input {
+      padding: 9px 15px; border: 2px solid var(--pink-border);
+      border-radius: 8px; font-size: 14px; outline: none; width: 260px;
+    }
+    .search-input:focus { border-color: var(--maroon-dark); }
+    .filter-select {
+      padding: 9px 15px; border: 2px solid var(--pink-border);
+      border-radius: 8px; font-size: 14px; outline: none; background: var(--pink-bg);
+    }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead { background-color: var(--pink-bg); }
+    .data-table thead th {
+      padding: 14px 18px; font-size: 13px; font-weight: 600;
+      color: var(--maroon-dark); text-align: left;
+    }
+    .data-table tbody tr { border-bottom: 1px solid var(--pink-border); transition: background 0.2s; }
+    .data-table tbody tr:hover { background-color: var(--pink-bg); }
+    .data-table tbody td { padding: 14px 18px; font-size: 13px; color: var(--black); }
+    .action-btn {
+      padding: 6px 12px; border-radius: 6px; border: none;
+      cursor: pointer; font-size: 12px; font-weight: 600; margin-right: 4px;
+    }
+    .btn-edit   { background-color: var(--pink-light); color: var(--maroon-dark); }
+    .btn-delete { background-color: #f8d7da; color: #721c24; }
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+      z-index: 999; align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 15px; padding: 35px;
+      width: 520px; max-width: 95%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;
+    }
+    .modal h3 { font-size: 20px; font-weight: 700; color: var(--maroon-dark); margin-bottom: 20px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--maroon-dark); margin-bottom: 6px;
+    }
+    .form-group input, .form-group select {
+      width: 100%; padding: 11px 15px; border: 2px solid var(--pink-border);
+      border-radius: 8px; font-size: 14px; outline: none;
+      transition: border 0.3s; background-color: var(--pink-bg);
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--maroon-dark); background: var(--white);
+    }
+    .modal-btns { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+    .btn-cancel {
+      padding: 10px 20px; border: 2px solid var(--maroon-dark);
+      background: transparent; color: var(--maroon-dark);
+      border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">🏢 Tenant<span>CRM</span></a>
+    <div class="sidebar-menu">
+      <div class="menu-label">Main</div>
+      <a href="dashboard.html"     class="menu-item"><span class="icon">📊</span> Dashboard</a>
+      <div class="menu-label">My Team</div>
+      <a href="users.html"         class="menu-item"><span class="icon">👥</span> Users</a>
+      <div class="menu-label">CRM</div>
+      <a href="accounts.html"      class="menu-item active"><span class="icon">🏦</span> Accounts</a>
+      <a href="contacts.html"      class="menu-item"><span class="icon">👤</span> Contacts</a>
+      <a href="leads.html"         class="menu-item"><span class="icon">🎯</span> Leads</a>
+      <a href="opportunities.html" class="menu-item"><span class="icon">💼</span> Opportunities</a>
+      <a href="tickets.html"       class="menu-item"><span class="icon">🎫</span> Tickets</a>
+      <a href="activities.html"    class="menu-item"><span class="icon">📋</span> Activities</a>
+      <div class="menu-label">Account</div>
+            <a href="notifications.html"    class="menu-item"><span class="icon">🔔</span> Notifications</a>
+      <a href="customFields.html"      class="menu-item"><span class="icon">⚙️</span> Custom Fields</a>
+      <a href="emailIntegrations.html" class="menu-item"><span class="icon">📧</span> Email Integrations</a>
+      <a href="leadConversions.html"   class="menu-item"><span class="icon">🔄</span> Lead Conversions</a>
+      <a href="#" class="menu-item" onclick="logout()"><span class="icon">🚪</span> Logout</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1>🏦 Accounts</h1>
+      <div class="topbar-right">
+        <div class="user-info">
+          <strong id="userName">Loading...</strong>
+          <span id="companyName">Tenant Admin</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-header">
+        <h2>All Accounts</h2>
+        <button class="btn-primary" onclick="openModal()">➕ Add Account</button>
+      </div>
+
+      <div class="success-msg" id="successMsg"></div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <input type="text" class="search-input"
+            placeholder="🔍 Search accounts..."
+            oninput="filterTable(this.value)">
+          <select class="filter-select" onchange="filterByIndustry(this.value)">
+            <option value="">All Industries</option>
+            <option>Technology</option><option>Finance</option>
+            <option>Healthcare</option><option>Retail</option>
+            <option>Education</option><option>Manufacturing</option><option>Other</option>
+          </select>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th><th>Account Name</th><th>Industry</th>
+              <th>Phone</th><th>Country</th><th>Annual Revenue</th>
+              <th>Assigned To</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="accountsTable">
+            <tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray)">⏳ Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3 id="modalTitle">➕ Add New Account</h3>
+      <input type="hidden" id="editAccountId">
+      <div class="form-group">
+        <label>Account Name</label>
+        <input type="text" id="accountName" placeholder="e.g. Apex Solutions">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Industry</label>
+          <select id="industry">
+            <option>Technology</option><option>Finance</option>
+            <option>Healthcare</option><option>Retail</option>
+            <option>Education</option><option>Manufacturing</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="phone" placeholder="+92 300 0000000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Website</label>
+          <input type="text" id="website" placeholder="https://company.com">
+        </div>
+        <div class="form-group">
+          <label>Country</label>
+          <input type="text" id="country" placeholder="Pakistan">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Annual Revenue ($)</label>
+          <input type="number" id="annualRevenue" placeholder="500000">
+        </div>
+        <div class="form-group">
+          <label>Assign To User</label>
+          <select id="assignedUserId">
+            <option value="">Select User</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveAccount()">💾 Save Account</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = 'http://localhost:3000';
+    let allAccounts = [];
+
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user || user.role !== 'tenant_admin') {
+      window.location.href = '../login.html';
+    } else {
+      document.getElementById('userName').textContent    = user.first_name + ' ' + user.last_name;
+      document.getElementById('companyName').textContent = user.company_name || 'Tenant Admin';
+    }
+
+    async function loadAccounts() {
+      try {
+        const res   = await fetch(`${BASE}/accounts/tenant/${user.tenant_id}`);
+        allAccounts = await res.json();
+        renderTable(allAccounts);
+      } catch(err) {
+        document.getElementById('accountsTable').innerHTML =
+          '<tr><td colspan="8" style="text-align:center;color:red">❌ Failed to load</td></tr>';
+      }
+    }
+
+    function renderTable(data) {
+      if (!data.length) {
+        document.getElementById('accountsTable').innerHTML =
+          '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--gray)">No accounts found</td></tr>';
+        return;
+      }
+      document.getElementById('accountsTable').innerHTML = data.map((a, i) => `
+        <tr>
+          <td>${i+1}</td>
+          <td><strong>${a.account_name}</strong></td>
+          <td><span class="badge badge-maroon">${a.industry||'-'}</span></td>
+          <td>${a.phone||'-'}</td>
+          <td>${a.country||'-'}</td>
+          <td>$${Number(a.annual_revenue||0).toLocaleString()}</td>
+          <td>${a.assigned_user||'-'}</td>
+          <td>
+            <button class="action-btn btn-edit" onclick="editAccount(${a.account_id})">✏️ Edit</button>
+            <button class="action-btn btn-delete" onclick="deleteAccount(${a.account_id})">🗑 Delete</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    function filterTable(val) {
+      renderTable(allAccounts.filter(a =>
+        a.account_name.toLowerCase().includes(val.toLowerCase()) ||
+        (a.country||'').toLowerCase().includes(val.toLowerCase())
+      ));
+    }
+
+    function filterByIndustry(val) {
+      renderTable(val ? allAccounts.filter(a => a.industry === val) : allAccounts);
+    }
+
+    async function loadUsers() {
+      const res   = await fetch(`${BASE}/users/tenant/${user.tenant_id}`);
+      const users = await res.json();
+      document.getElementById('assignedUserId').innerHTML =
+        '<option value="">Select User</option>' +
+        users.map(u => `<option value="${u.user_id}">${u.first_name} ${u.last_name}</option>`).join('');
+    }
+
+    function openModal() {
+      document.getElementById('modalTitle').textContent = '➕ Add New Account';
+      document.getElementById('editAccountId').value = '';
+      document.getElementById('accountName').value   = '';
+      document.getElementById('phone').value         = '';
+      document.getElementById('website').value       = '';
+      document.getElementById('country').value       = '';
+      document.getElementById('annualRevenue').value = '';
+      loadUsers();
+      document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    function editAccount(id) {
+      const a = allAccounts.find(x => x.account_id === id);
+      if (!a) return;
+      document.getElementById('modalTitle').textContent = '✏️ Edit Account';
+      document.getElementById('editAccountId').value    = a.account_id;
+      document.getElementById('accountName').value      = a.account_name;
+      document.getElementById('industry').value         = a.industry || 'Technology';
+      document.getElementById('phone').value            = a.phone || '';
+      document.getElementById('website').value          = a.website || '';
+      document.getElementById('country').value          = a.country || '';
+      document.getElementById('annualRevenue').value    = a.annual_revenue || '';
+      loadUsers();
+      document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+    async function saveAccount() {
+      const editId = document.getElementById('editAccountId').value;
+      const body = {
+        account_name:     document.getElementById('accountName').value.trim(),
+        industry:         document.getElementById('industry').value,
+        phone:            document.getElementById('phone').value.trim(),
+        website:          document.getElementById('website').value.trim(),
+        country:          document.getElementById('country').value.trim(),
+        annual_revenue:   document.getElementById('annualRevenue').value,
+        tenant_id:        user.tenant_id,
+        assigned_user_id: document.getElementById('assignedUserId').value
+      };
+      if (!body.account_name) { alert('Account name required!'); return; }
+
+      if (editId) {
+        await fetch(`${BASE}/accounts/update/${editId}`, {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        showSuccess('✅ Account updated!');
+      } else {
+        await fetch(`${BASE}/accounts/add`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        showSuccess('✅ Account added!');
+      }
+      closeModal();
+      loadAccounts();
+    }
+
+    async function deleteAccount(id) {
+      if (!confirm('Delete this account?')) return;
+      await fetch(`${BASE}/accounts/delete/${id}`, { method: 'DELETE' });
+      showSuccess('✅ Account deleted!');
+      loadAccounts();
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('successMsg');
+      el.textContent = msg; el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 3000);
+    }
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = '../login.html';
+    }
+
+    loadAccounts();
+  </script>
+</body>
+</html>

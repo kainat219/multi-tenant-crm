@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Opportunities — Super Admin</title>
+  <link rel="stylesheet" href="../theme.css">
+  <style>
+    .sidebar {
+      width: 260px; background-color: var(--maroon-dark);
+      padding: 30px 0; position: fixed; top: 0; left: 0;
+      height: 100vh; overflow-y: auto; z-index: 100;
+    }
+    .sidebar-logo {
+      font-size: 22px; font-weight: 800; padding: 0 25px 30px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: var(--white); text-decoration: none; display: block;
+    }
+    .sidebar-logo span { color: var(--pink-border); }
+    .menu-label {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.4);
+      padding: 10px 25px 5px; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .menu-item {
+      display: flex; align-items: center; gap: 12px; padding: 13px 25px;
+      color: rgba(255,255,255,0.8); text-decoration: none;
+      font-size: 14px; font-weight: 500; transition: all 0.2s;
+    }
+    .menu-item:hover, .menu-item.active {
+      background-color: rgba(255,255,255,0.1); color: var(--white);
+      border-left: 3px solid var(--pink-border);
+    }
+    .menu-item .icon { font-size: 18px; }
+    .main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; }
+    .topbar {
+      background-color: var(--white); padding: 18px 35px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--pink-border); position: sticky; top: 0; z-index: 99;
+    }
+    .topbar h1 { font-size: 22px; font-weight: 700; color: var(--maroon-dark); }
+    .topbar-right { display: flex; align-items: center; gap: 15px; }
+    .user-info { text-align: right; font-size: 13px; }
+    .user-info strong { display: block; color: var(--maroon-dark); font-weight: 700; }
+    .user-info span { color: var(--gray); }
+    .logout-btn {
+      background-color: var(--maroon-dark); color: var(--white); border: none;
+      padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;
+    }
+    .logout-btn:hover { background-color: var(--maroon-hover); }
+    .content { padding: 35px; }
+    .page-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 25px;
+    }
+    .page-header h2 { font-size: 24px; font-weight: 700; color: var(--maroon-dark); }
+    .success-msg {
+      background-color: #d4edda; color: #155724; padding: 12px 18px;
+      border-radius: 8px; font-size: 14px; margin-bottom: 20px; display: none;
+    }
+    .table-card {
+      background-color: var(--white); border-radius: 15px;
+      border: 1px solid var(--pink-border);
+      box-shadow: 0 3px 15px var(--shadow); overflow: hidden;
+    }
+    .table-toolbar {
+      padding: 18px 25px; border-bottom: 1px solid var(--pink-border);
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    }
+    .search-input {
+      padding: 9px 15px; border: 2px solid var(--pink-border);
+      border-radius: 8px; font-size: 14px; outline: none; width: 230px;
+    }
+    .search-input:focus { border-color: var(--maroon-dark); }
+    .filter-select {
+      padding: 9px 15px; border: 2px solid var(--pink-border);
+      border-radius: 8px; font-size: 14px; outline: none; background: var(--pink-bg);
+    }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead { background-color: var(--pink-bg); }
+    .data-table thead th {
+      padding: 14px 18px; font-size: 13px; font-weight: 600;
+      color: var(--maroon-dark); text-align: left;
+    }
+    .data-table tbody tr {
+      border-bottom: 1px solid var(--pink-border); transition: background 0.2s;
+    }
+    .data-table tbody tr:hover { background-color: var(--pink-bg); }
+    .data-table tbody td { padding: 14px 18px; font-size: 13px; color: var(--black); }
+    .action-btn {
+      padding: 6px 12px; border-radius: 6px; border: none;
+      cursor: pointer; font-size: 12px; font-weight: 600; margin-right: 4px;
+    }
+    .btn-edit   { background-color: var(--pink-light); color: var(--maroon-dark); }
+    .btn-delete { background-color: #f8d7da; color: #721c24; }
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+      z-index: 999; align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 15px; padding: 35px;
+      width: 540px; max-width: 95%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto;
+    }
+    .modal h3 { font-size: 20px; font-weight: 700; color: var(--maroon-dark); margin-bottom: 20px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--maroon-dark); margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 11px 15px; border: 2px solid var(--pink-border);
+      border-radius: 8px; font-size: 14px; outline: none;
+      transition: border 0.3s; background-color: var(--pink-bg);
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--maroon-dark); background: var(--white); }
+    .form-group textarea { resize: vertical; min-height: 75px; }
+    .modal-btns {
+      display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;
+    }
+    .btn-cancel {
+      padding: 10px 20px; border: 2px solid var(--maroon-dark);
+      background: transparent; color: var(--maroon-dark);
+      border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">🏢 Tenant<span>CRM</span></a>
+    <div class="sidebar-menu">
+      <div class="menu-label">Main</div>
+      <a href="dashboard.html"     class="menu-item"><span class="icon">📊</span> Dashboard</a>
+      <div class="menu-label">Management</div>
+      <a href="tenants.html"       class="menu-item"><span class="icon">🏢</span> Tenants</a>
+      <a href="users.html"         class="menu-item"><span class="icon">👥</span> Users</a>
+      <a href="plans.html"         class="menu-item"><span class="icon">💳</span> Plans</a>
+      <div class="menu-label">CRM Data</div>
+      <a href="accounts.html"      class="menu-item"><span class="icon">🏦</span> Accounts</a>
+      <a href="contacts.html"      class="menu-item"><span class="icon">👤</span> Contacts</a>
+      <a href="leads.html"         class="menu-item"><span class="icon">🎯</span> Leads</a>
+      <a href="opportunities.html" class="menu-item active"><span class="icon">💼</span> Opportunities</a>
+      <div class="menu-label">Account</div>
+            <a href="notifications.html"    class="menu-item"><span class="icon">🔔</span> Notifications</a>
+      <a href="customFields.html"      class="menu-item"><span class="icon">⚙️</span> Custom Fields</a>
+      <a href="emailIntegrations.html" class="menu-item"><span class="icon">📧</span> Email Integrations</a>
+      <a href="leadConversions.html"   class="menu-item"><span class="icon">🔄</span> Lead Conversions</a>
+      <a href="#" class="menu-item" onclick="logout()"><span class="icon">🚪</span> Logout</a>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <h1>💼 Opportunities</h1>
+      <div class="topbar-right">
+        <div class="user-info">
+          <strong id="userName">Loading...</strong>
+          <span>Super Admin</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-header">
+        <h2>All Opportunities</h2>
+        <button class="btn-primary" onclick="openModal()">➕ Add Opportunity</button>
+      </div>
+
+      <div class="success-msg" id="successMsg"></div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <input type="text" class="search-input"
+            placeholder="🔍 Search opportunities..."
+            oninput="filterTable(this.value)">
+          <select class="filter-select" onchange="filterByStatus(this.value)">
+            <option value="">All Status</option>
+            <option value="open">Open</option>
+            <option value="won">Won</option>
+            <option value="lost">Lost</option>
+          </select>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Opportunity</th>
+              <th>Account</th>
+              <th>Deal Value</th>
+              <th>Stage</th>
+              <th>Status</th>
+              <th>Close Date</th>
+              <th>Assigned To</th>
+              <th>Tenant</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="oppsTable">
+            <tr><td colspan="10" style="text-align:center;padding:30px;color:var(--gray)">⏳ Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3 id="modalTitle">➕ Add New Opportunity</h3>
+      <input type="hidden" id="editOppId">
+      <div class="form-group">
+        <label>Opportunity Name</label>
+        <input type="text" id="oppName" placeholder="e.g. Enterprise Deal Q2">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Deal Value ($)</label>
+          <input type="number" id="dealValue" placeholder="50000">
+        </div>
+        <div class="form-group">
+          <label>Expected Close Date</label>
+          <input type="date" id="closeDate">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Status</label>
+          <select id="status">
+            <option value="open">Open</option>
+            <option value="won">Won</option>
+            <option value="lost">Lost</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tenant</label>
+          <select id="tenantId" onchange="loadTenantData(this.value)">
+            <option value="">Select Tenant</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Account</label>
+          <select id="accountId">
+            <option value="">Select tenant first</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Contact</label>
+          <select id="contactId">
+            <option value="">Select tenant first</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Assign To User</label>
+        <select id="assignedUserId">
+          <option value="">Select tenant first</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="notes" placeholder="Any additional notes..."></textarea>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveOpp()">💾 Save Opportunity</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = 'http://localhost:3000';
+    let allOpps = [];
+
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user || user.role !== 'super_admin') {
+      window.location.href = '../login.html';
+    } else {
+      document.getElementById('userName').textContent = user.first_name + ' ' + user.last_name;
+    }
+
+    async function loadOpps() {
+      try {
+        const res = await fetch(`${BASE}/opportunities`);
+        allOpps   = await res.json();
+        renderTable(allOpps);
+      } catch (err) {
+        document.getElementById('oppsTable').innerHTML =
+          '<tr><td colspan="10" style="text-align:center;color:red">❌ Failed to load</td></tr>';
+      }
+    }
+
+    function oppColor(s) {
+      if (s === 'won')  return 'success';
+      if (s === 'lost') return 'error';
+      return 'maroon';
+    }
+
+    function renderTable(data) {
+      if (!data.length) {
+        document.getElementById('oppsTable').innerHTML =
+          '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--gray)">No opportunities found</td></tr>';
+        return;
+      }
+      document.getElementById('oppsTable').innerHTML = data.map((o, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td><strong>${o.opportunity_name}</strong></td>
+          <td>${o.account_name || '-'}</td>
+          <td>$${Number(o.deal_value || 0).toLocaleString()}</td>
+          <td>${o.stage_name || '-'}</td>
+          <td><span class="badge badge-${oppColor(o.status)}">${o.status}</span></td>
+          <td>${o.expected_close_date ? new Date(o.expected_close_date).toLocaleDateString() : '-'}</td>
+          <td>${o.assigned_user || '-'}</td>
+          <td>${o.company_name || '-'}</td>
+          <td>
+            <button class="action-btn btn-edit"
+              onclick="editOpp(${o.opportunity_id})">✏️ Edit</button>
+            <button class="action-btn btn-delete"
+              onclick="deleteOpp(${o.opportunity_id})">🗑 Delete</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    function filterTable(val) {
+      const filtered = allOpps.filter(o =>
+        o.opportunity_name.toLowerCase().includes(val.toLowerCase()) ||
+        (o.account_name || '').toLowerCase().includes(val.toLowerCase())
+      );
+      renderTable(filtered);
+    }
+
+    function filterByStatus(val) {
+      renderTable(val ? allOpps.filter(o => o.status === val) : allOpps);
+    }
+
+    async function loadTenants() {
+      const res     = await fetch(`${BASE}/tenants`);
+      const tenants = await res.json();
+      document.getElementById('tenantId').innerHTML =
+        '<option value="">Select Tenant</option>' +
+        tenants.map(t => `<option value="${t.tenant_id}">${t.company_name}</option>`).join('');
+    }
+
+    async function loadTenantData(tenantId) {
+      if (!tenantId) return;
+      const [usersRes, accountsRes, contactsRes] = await Promise.all([
+        fetch(`${BASE}/users/tenant/${tenantId}`),
+        fetch(`${BASE}/accounts/tenant/${tenantId}`),
+        fetch(`${BASE}/contacts/tenant/${tenantId}`)
+      ]);
+      const users    = await usersRes.json();
+      const accounts = await accountsRes.json();
+      const contacts = await contactsRes.json();
+
+      document.getElementById('assignedUserId').innerHTML =
+        '<option value="">Select User</option>' +
+        users.map(u => `<option value="${u.user_id}">${u.first_name} ${u.last_name}</option>`).join('');
+
+      document.getElementById('accountId').innerHTML =
+        '<option value="">Select Account</option>' +
+        accounts.map(a => `<option value="${a.account_id}">${a.account_name}</option>`).join('');
+
+      document.getElementById('contactId').innerHTML =
+        '<option value="">Select Contact</option>' +
+        contacts.map(c => `<option value="${c.contact_id}">${c.first_name} ${c.last_name}</option>`).join('');
+    }
+
+    function openModal() {
+      document.getElementById('modalTitle').textContent = '➕ Add New Opportunity';
+      document.getElementById('editOppId').value  = '';
+      document.getElementById('oppName').value    = '';
+      document.getElementById('dealValue').value  = '';
+      document.getElementById('closeDate').value  = '';
+      document.getElementById('notes').value      = '';
+      loadTenants();
+      document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    function editOpp(id) {
+      const o = allOpps.find(x => x.opportunity_id === id);
+      if (!o) return;
+      document.getElementById('modalTitle').textContent = '✏️ Edit Opportunity';
+      document.getElementById('editOppId').value  = o.opportunity_id;
+      document.getElementById('oppName').value    = o.opportunity_name;
+      document.getElementById('dealValue').value  = o.deal_value || '';
+      document.getElementById('closeDate').value  = o.expected_close_date
+        ? new Date(o.expected_close_date).toISOString().split('T')[0] : '';
+      document.getElementById('status').value     = o.status;
+      document.getElementById('notes').value      = o.notes || '';
+      loadTenants();
+      document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+    async function saveOpp() {
+      const editId = document.getElementById('editOppId').value;
+      const body = {
+        opportunity_name:    document.getElementById('oppName').value.trim(),
+        deal_value:          document.getElementById('dealValue').value,
+        expected_close_date: document.getElementById('closeDate').value,
+        status:              document.getElementById('status').value,
+        notes:               document.getElementById('notes').value.trim(),
+        tenant_id:           document.getElementById('tenantId').value,
+        account_id:          document.getElementById('accountId').value,
+        contact_id:          document.getElementById('contactId').value,
+        assigned_user_id:    document.getElementById('assignedUserId').value
+      };
+
+      if (!body.opportunity_name) { alert('Opportunity name required!'); return; }
+
+      if (editId) {
+        await fetch(`${BASE}/opportunities/status/${editId}`, {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: body.status })
+        });
+        showSuccess('✅ Opportunity updated!');
+      } else {
+        await fetch(`${BASE}/opportunities/add`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        showSuccess('✅ Opportunity added!');
+      }
+      closeModal();
+      loadOpps();
+    }
+
+    async function deleteOpp(id) {
+      if (!confirm('Delete this opportunity?')) return;
+      await fetch(`${BASE}/opportunities/delete/${id}`, { method: 'DELETE' });
+      showSuccess('✅ Opportunity deleted!');
+      loadOpps();
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('successMsg');
+      el.textContent   = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 3000);
+    }
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = '../login.html';
+    }
+
+    loadOpps();
+  </script>
+</body>
+</html>

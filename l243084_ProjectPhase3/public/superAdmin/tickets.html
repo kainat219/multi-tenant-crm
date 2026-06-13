@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tickets — Super Admin</title>
+  <link rel="stylesheet" href="../theme.css">
+  <style>
+    body { display:flex;flex-direction:column;min-height:100vh; }
+    .sidebar { width:260px;background:var(--maroon-dark);position:fixed;height:100vh;padding:30px 0;overflow-y:auto;z-index:100; }
+    .sidebar-logo { font-size:22px;color:white;padding:0 25px 30px;display:block;text-decoration:none;font-weight:800;border-bottom:1px solid rgba(255,255,255,0.1); }
+    .sidebar-logo span { color:var(--pink-border); }
+    .menu-label { font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);padding:10px 25px 5px;text-transform:uppercase;letter-spacing:1px; }
+    .menu-item { display:flex;align-items:center;gap:12px;padding:13px 25px;color:rgba(255,255,255,0.8);text-decoration:none;font-size:14px;font-weight:500;transition:all 0.2s; }
+    .menu-item:hover,.menu-item.active { background:rgba(255,255,255,0.1);color:white;border-left:3px solid var(--pink-border); }
+    .menu-item .icon { font-size:18px; }
+    .main { margin-left:260px;flex:1;display:flex;flex-direction:column; }
+    .topbar { background:var(--white);padding:18px 35px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--pink-border);position:sticky;top:0;z-index:99; }
+    .topbar h1 { font-size:22px;font-weight:700;color:var(--maroon-dark); }
+    .topbar-right { display:flex;align-items:center;gap:15px; }
+    .user-info { text-align:right;font-size:13px; }
+    .user-info strong { display:block;color:var(--maroon-dark);font-weight:700; }
+    .user-info span { color:var(--gray); }
+    .logout-btn { background:var(--maroon-dark);color:white;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600; }
+    .logout-btn:hover { background:var(--maroon-hover); }
+    .content { padding:35px;flex:1; }
+    .page-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:25px; }
+    .page-header h2 { font-size:24px;font-weight:700;color:var(--maroon-dark); }
+    .success-msg { background:#d4edda;color:#155724;padding:12px 18px;border-radius:8px;font-size:14px;margin-bottom:20px;display:none; }
+    .table-card { background:var(--white);border-radius:15px;border:1px solid var(--pink-border);box-shadow:0 3px 15px var(--shadow);overflow:hidden; }
+    .table-toolbar { padding:18px 25px;border-bottom:1px solid var(--pink-border);display:flex;gap:10px;align-items:center;flex-wrap:wrap; }
+    .search-input { padding:9px 15px;border:2px solid var(--pink-border);border-radius:8px;font-size:14px;outline:none;width:240px; }
+    .search-input:focus { border-color:var(--maroon-dark); }
+    .filter-select { padding:9px 15px;border:2px solid var(--pink-border);border-radius:8px;font-size:14px;outline:none;background:var(--pink-bg); }
+    .data-table { width:100%;border-collapse:collapse; }
+    .data-table thead { background:var(--pink-bg); }
+    .data-table thead th { padding:14px 18px;font-size:13px;font-weight:600;color:var(--maroon-dark);text-align:left; }
+    .data-table tbody tr { border-bottom:1px solid var(--pink-border);transition:background 0.2s; }
+    .data-table tbody tr:hover { background:var(--pink-bg); }
+    .data-table tbody td { padding:14px 18px;font-size:13px;color:var(--black); }
+    .action-btn { padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;margin-right:4px; }
+    .btn-delete { background:#f8d7da;color:#721c24; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">🏢 Tenant<span>CRM</span></a>
+  <div class="sidebar-menu">
+    <div class="menu-label">Main</div>
+    <a href="dashboard.html"     class="menu-item"><span class="icon">📊</span> Dashboard</a>
+    <div class="menu-label">Management</div>
+    <a href="tenants.html"       class="menu-item"><span class="icon">🏢</span> Tenants</a>
+    <a href="users.html"         class="menu-item"><span class="icon">👥</span> Users</a>
+    <a href="plans.html"         class="menu-item"><span class="icon">💳</span> Plans</a>
+    <a href="billing.html"       class="menu-item"><span class="icon">💰</span> Billing</a>
+    <div class="menu-label">CRM Data</div>
+    <a href="accounts.html"      class="menu-item"><span class="icon">🏦</span> Accounts</a>
+    <a href="contacts.html"      class="menu-item"><span class="icon">👤</span> Contacts</a>
+    <a href="leads.html"         class="menu-item"><span class="icon">🎯</span> Leads</a>
+    <a href="opportunities.html" class="menu-item"><span class="icon">💼</span> Opportunities</a>
+    <a href="tickets.html"       class="menu-item active"><span class="icon">🎫</span> Tickets</a>
+    <div class="menu-label">System</div>
+    <a href="audit.html"         class="menu-item"><span class="icon">🔍</span> Audit Logs</a>
+      <a href="notifications.html"    class="menu-item"><span class="icon">🔔</span> Notifications</a>
+      <a href="customFields.html"      class="menu-item"><span class="icon">⚙️</span> Custom Fields</a>
+      <a href="emailIntegrations.html" class="menu-item"><span class="icon">📧</span> Email Integrations</a>
+      <a href="leadConversions.html"   class="menu-item"><span class="icon">🔄</span> Lead Conversions</a>
+    <div class="menu-label">Account</div>
+          <a href="notifications.html"    class="menu-item"><span class="icon">🔔</span> Notifications</a>
+      <a href="customFields.html"      class="menu-item"><span class="icon">⚙️</span> Custom Fields</a>
+      <a href="emailIntegrations.html" class="menu-item"><span class="icon">📧</span> Email Integrations</a>
+      <a href="leadConversions.html"   class="menu-item"><span class="icon">🔄</span> Lead Conversions</a>
+      <a href="#" class="menu-item" onclick="logout()"><span class="icon">🚪</span> Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1>🎫 Support Tickets</h1>
+    <div class="topbar-right">
+      <div class="user-info">
+        <strong id="userName">Loading...</strong>
+        <span>Super Admin</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <h2>All Support Tickets</h2>
+    </div>
+
+    <div class="success-msg" id="successMsg"></div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <input type="text" class="search-input" placeholder="🔍 Search tickets..." oninput="filterTable(this.value)">
+        <select class="filter-select" onchange="filterByStatus(this.value)">
+          <option value="">All Status</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+          <option value="closed">Closed</option>
+        </select>
+        <select class="filter-select" onchange="filterByPriority(this.value)">
+          <option value="">All Priority</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="critical">Critical</option>
+        </select>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Subject</th><th>Tenant</th><th>Account</th>
+            <th>Assigned To</th><th>Priority</th><th>Status</th><th>Created</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ticketsTable">
+          <tr><td colspan="9" style="text-align:center;padding:30px;color:var(--gray)">⏳ Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const BASE = 'http://localhost:3000';
+  let allTickets = [];
+
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  if (!user || user.role !== 'super_admin') {
+    window.location.href = '../login.html';
+  } else {
+    document.getElementById('userName').textContent = user.first_name + ' ' + user.last_name;
+  }
+
+  async function loadTickets() {
+    try {
+      const res  = await fetch(`${BASE}/tickets`);
+      allTickets = await res.json();
+      renderTable(allTickets);
+    } catch(err) {
+      document.getElementById('ticketsTable').innerHTML =
+        '<tr><td colspan="9" style="text-align:center;color:red">❌ Failed to load</td></tr>';
+    }
+  }
+
+  function priorityColor(p) {
+    if (p==='critical') return 'error';
+    if (p==='high')     return 'warning';
+    if (p==='medium')   return 'maroon';
+    return 'success';
+  }
+
+  function statusColor(s) {
+    if (s==='resolved'||s==='closed') return 'success';
+    if (s==='in_progress')            return 'warning';
+    return 'maroon';
+  }
+
+  function renderTable(data) {
+    if (!data.length) {
+      document.getElementById('ticketsTable').innerHTML =
+        '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--gray)">No tickets found</td></tr>';
+      return;
+    }
+    document.getElementById('ticketsTable').innerHTML = data.map((t, i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td><strong>${t.subject}</strong></td>
+        <td>${t.company_name||'-'}</td>
+        <td>${t.account_name||'-'}</td>
+        <td>${t.assigned_user||'Unassigned'}</td>
+        <td><span class="badge badge-${priorityColor(t.priority)}">${t.priority}</span></td>
+        <td><span class="badge badge-${statusColor(t.status)}">${t.status}</span></td>
+        <td>${new Date(t.created_at).toLocaleDateString()}</td>
+        <td>
+          <button class="action-btn btn-delete" onclick="deleteTicket(${t.ticket_id})">🗑 Delete</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function filterTable(val) {
+    renderTable(allTickets.filter(t =>
+      t.subject.toLowerCase().includes(val.toLowerCase()) ||
+      (t.company_name||'').toLowerCase().includes(val.toLowerCase()) ||
+      (t.account_name||'').toLowerCase().includes(val.toLowerCase())
+    ));
+  }
+
+  function filterByStatus(val)   { renderTable(val ? allTickets.filter(t => t.status === val) : allTickets); }
+  function filterByPriority(val) { renderTable(val ? allTickets.filter(t => t.priority === val) : allTickets); }
+
+  async function deleteTicket(id) {
+    if (!confirm('Delete this ticket?')) return;
+    await fetch(`${BASE}/tickets/delete/${id}`, { method: 'DELETE' });
+    showSuccess('✅ Ticket deleted!');
+    loadTickets();
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById('successMsg');
+    el.textContent = msg; el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3000);
+  }
+
+  function logout() { localStorage.removeItem('user'); window.location.href = '../login.html'; }
+
+  loadTickets();
+</script>
+</body>
+</html>

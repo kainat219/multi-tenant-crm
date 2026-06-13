@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Fields — Tenant Admin</title>
+  <link rel="stylesheet" href="../theme.css">
+  <style>
+    .sidebar { width:260px; background-color:var(--maroon-dark); padding:30px 0; position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:100; }
+    .sidebar-logo { font-size:22px; font-weight:800; padding:0 25px 30px; border-bottom:1px solid rgba(255,255,255,0.1); color:var(--white); text-decoration:none; display:block; }
+    .sidebar-logo span { color:var(--pink-border); }
+    .menu-label { font-size:11px; font-weight:600; color:rgba(255,255,255,0.4); padding:10px 25px 5px; text-transform:uppercase; letter-spacing:1px; }
+    .menu-item { display:flex; align-items:center; gap:12px; padding:13px 25px; color:rgba(255,255,255,0.8); text-decoration:none; font-size:14px; font-weight:500; transition:all 0.2s; }
+    .menu-item:hover, .menu-item.active { background-color:rgba(255,255,255,0.1); color:var(--white); border-left:3px solid var(--pink-border); }
+    .menu-item .icon { font-size:18px; }
+    .main { margin-left:260px; flex:1; display:flex; flex-direction:column; }
+    .topbar { background-color:var(--white); padding:18px 35px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--pink-border); position:sticky; top:0; z-index:99; }
+    .topbar h1 { font-size:22px; font-weight:700; color:var(--maroon-dark); }
+    .topbar-right { display:flex; align-items:center; gap:15px; }
+    .user-info { text-align:right; font-size:13px; }
+    .user-info strong { display:block; color:var(--maroon-dark); font-weight:700; }
+    .logout-btn { background-color:var(--maroon-dark); color:var(--white); border:none; padding:9px 18px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; }
+    .logout-btn:hover { background-color:var(--maroon-hover); }
+    .content { padding:35px; }
+    .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; }
+    .page-header h2 { font-size:24px; font-weight:700; color:var(--maroon-dark); }
+    .success-msg { background-color:#d4edda; color:#155724; padding:12px 18px; border-radius:8px; font-size:14px; margin-bottom:20px; display:none; }
+    .table-card { background-color:var(--white); border-radius:15px; border:1px solid var(--pink-border); box-shadow:0 3px 15px var(--shadow); overflow:hidden; }
+    .table-toolbar { padding:18px 25px; border-bottom:1px solid var(--pink-border); display:flex; gap:10px; align-items:center; }
+    .search-input { padding:9px 15px; border:2px solid var(--pink-border); border-radius:8px; font-size:14px; outline:none; width:240px; }
+    .search-input:focus { border-color:var(--maroon-dark); }
+    .filter-select { padding:9px 15px; border:2px solid var(--pink-border); border-radius:8px; font-size:14px; outline:none; background:var(--pink-bg); }
+    .data-table { width:100%; border-collapse:collapse; }
+    .data-table thead { background-color:var(--pink-bg); }
+    .data-table thead th { padding:14px 18px; font-size:13px; font-weight:600; color:var(--maroon-dark); text-align:left; }
+    .data-table tbody tr { border-bottom:1px solid var(--pink-border); transition:background 0.2s; }
+    .data-table tbody tr:hover { background-color:var(--pink-bg); }
+    .data-table tbody td { padding:14px 18px; font-size:13px; color:var(--black); }
+    .action-btn { padding:6px 12px; border-radius:6px; border:none; cursor:pointer; font-size:12px; font-weight:600; margin-right:4px; }
+    .btn-edit { background-color:var(--pink-light); color:var(--maroon-dark); }
+    .btn-delete { background-color:#f8d7da; color:#721c24; }
+    .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; }
+    .modal-overlay.show { display:flex; }
+    .modal { background:var(--white); border-radius:15px; padding:35px; width:520px; max-width:95%; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:90vh; overflow-y:auto; }
+    .modal h3 { font-size:20px; font-weight:700; color:var(--maroon-dark); margin-bottom:20px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+    .form-group { margin-bottom:15px; }
+    .form-group label { display:block; font-size:13px; font-weight:600; color:var(--maroon-dark); margin-bottom:6px; }
+    .form-group input, .form-group select { width:100%; padding:11px 15px; border:2px solid var(--pink-border); border-radius:8px; font-size:14px; outline:none; transition:border 0.3s; background-color:var(--pink-bg); }
+    .form-group input:focus, .form-group select:focus { border-color:var(--maroon-dark); background:var(--white); }
+    .modal-btns { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+    .btn-cancel { padding:10px 20px; border:2px solid var(--maroon-dark); background:transparent; color:var(--maroon-dark); border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; }
+    .empty-row td { text-align:center; padding:40px; color:var(--gray); font-size:15px; }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">🏢 Tenant<span>CRM</span></a>
+  <div class="sidebar-menu">
+    <div class="menu-label">Main</div>
+    <a href="dashboard.html"     class="menu-item"><span class="icon">📊</span> Dashboard</a>
+    <div class="menu-label">My Team</div>
+    <a href="users.html"         class="menu-item"><span class="icon">👥</span> Users</a>
+    <div class="menu-label">CRM</div>
+    <a href="accounts.html"      class="menu-item"><span class="icon">🏦</span> Accounts</a>
+    <a href="contacts.html"      class="menu-item"><span class="icon">👤</span> Contacts</a>
+    <a href="leads.html"         class="menu-item"><span class="icon">🎯</span> Leads</a>
+    <a href="opportunities.html" class="menu-item"><span class="icon">💼</span> Opportunities</a>
+    <a href="tickets.html"       class="menu-item"><span class="icon">🎫</span> Tickets</a>
+    <a href="activities.html"    class="menu-item"><span class="icon">📋</span> Activities</a>
+    <div class="menu-label">Account</div>
+    <a href="notifications.html"     class="menu-item"><span class="icon">🔔</span> Notifications</a>
+    <a href="customFields.html"      class="menu-item active"><span class="icon">⚙️</span> Custom Fields</a>
+    <a href="emailIntegrations.html" class="menu-item"><span class="icon">📧</span> Email Integrations</a>
+    <a href="leadConversions.html"   class="menu-item"><span class="icon">🔄</span> Lead Conversions</a>
+    <a href="#" class="menu-item" onclick="logout()"><span class="icon">🚪</span> Logout</a>
+  </div>
+</div>
+<div class="main">
+  <div class="topbar">
+    <h1>⚙️ Custom Fields</h1>
+    <div class="topbar-right">
+      <div class="user-info">
+        <strong id="userName">Loading...</strong>
+        <span id="companyName">Tenant Admin</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="page-header">
+      <h2>Custom Fields</h2>
+      <button class="btn-primary" onclick="openModal()">➕ Add Field</button>
+    </div>
+    <div class="success-msg" id="successMsg"></div>
+    <div class="table-card">
+      <div class="table-toolbar">
+        <input type="text" class="search-input" placeholder="🔍 Search fields..." oninput="filterTable(this.value)">
+        <select class="filter-select" onchange="filterByEntity(this.value)">
+          <option value="">All Entities</option>
+          <option value="contact">Contact</option>
+          <option value="lead">Lead</option>
+          <option value="opportunity">Opportunity</option>
+          <option value="account">Account</option>
+        </select>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>Field Name</th><th>Entity Type</th><th>Field Type</th><th>Required</th><th>Status</th><th>Order</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="fieldsTable"><tr class="empty-row"><td colspan="8">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">➕ Add Custom Field</h3>
+    <input type="hidden" id="editId" />
+    <div class="form-row">
+      <div class="form-group"><label>Field Name</label><input type="text" id="field_name" placeholder="e.g. LinkedIn URL" /></div>
+      <div class="form-group"><label>Display Order</label><input type="number" id="display_order" value="1" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Entity Type</label>
+        <select id="entity_type"><option value="contact">Contact</option><option value="lead">Lead</option><option value="opportunity">Opportunity</option><option value="account">Account</option></select>
+      </div>
+      <div class="form-group"><label>Field Type</label>
+        <select id="field_type"><option value="text">Text</option><option value="number">Number</option><option value="date">Date</option><option value="dropdown">Dropdown</option><option value="checkbox">Checkbox</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Required?</label>
+      <select id="is_required"><option value="0">No</option><option value="1">Yes</option></select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveField()">Save Field</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const tenantId = user.tenant_id || 1;
+  document.getElementById('userName').textContent    = user.first_name ? user.first_name + ' ' + user.last_name : 'Admin';
+  document.getElementById('companyName').textContent = user.company_name || 'Tenant Admin';
+  let allData = [];
+
+  async function loadFields() {
+    try {
+      const res = await fetch(`http://localhost:3000/customfields/tenant/${tenantId}`);
+      allData   = await res.json();
+      renderTable(allData);
+    } catch(err) { console.error(err); }
+  }
+
+  function renderTable(data) {
+    const tbody = document.getElementById('fieldsTable');
+    if (!data.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="8">⚙️ No custom fields found</td></tr>'; return; }
+    tbody.innerHTML = data.map((f,i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td><strong>${f.field_name}</strong></td>
+        <td><span class="badge badge-maroon">${f.entity_type}</span></td>
+        <td><span class="badge badge-warning">${f.field_type}</span></td>
+        <td>${f.is_required ? '✅ Yes' : '❌ No'}</td>
+        <td><span class="badge ${f.is_active ? 'badge-success' : 'badge-error'}">${f.is_active ? 'Active' : 'Inactive'}</span></td>
+        <td>${f.display_order}</td>
+        <td>
+          <button class="action-btn btn-edit" onclick='editField(${JSON.stringify(f)})'>✏️ Edit</button>
+          <button class="action-btn btn-delete" onclick="deleteField(${f.field_id})">🗑 Delete</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function filterTable(q) { renderTable(allData.filter(f => f.field_name.toLowerCase().includes(q.toLowerCase()))); }
+  function filterByEntity(e) { renderTable(e ? allData.filter(f => f.entity_type === e) : allData); }
+
+  function editField(f) {
+    document.getElementById('modalTitle').textContent = '✏️ Edit Custom Field';
+    document.getElementById('editId').value           = f.field_id;
+    document.getElementById('field_name').value       = f.field_name;
+    document.getElementById('entity_type').value      = f.entity_type;
+    document.getElementById('field_type').value       = f.field_type;
+    document.getElementById('display_order').value    = f.display_order;
+    document.getElementById('is_required').value      = f.is_required;
+    openModal();
+  }
+
+  async function saveField() {
+    const editId = document.getElementById('editId').value;
+    const body   = { tenant_id: tenantId, field_name: document.getElementById('field_name').value, entity_type: document.getElementById('entity_type').value, field_type: document.getElementById('field_type').value, display_order: parseInt(document.getElementById('display_order').value), is_required: parseInt(document.getElementById('is_required').value), is_active: 1 };
+    if (editId) { await fetch(`http://localhost:3000/customfields/update/${editId}`, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)}); }
+    else { await fetch('http://localhost:3000/customfields/add', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)}); }
+    closeModal(); showSuccess('Custom field saved!'); loadFields();
+  }
+
+  async function deleteField(id) {
+    if (!confirm('Delete this field?')) return;
+    await fetch(`http://localhost:3000/customfields/delete/${id}`, {method:'DELETE'});
+    showSuccess('Field deleted!'); loadFields();
+  }
+
+  function showSuccess(msg) { const el = document.getElementById('successMsg'); el.textContent = '✅ ' + msg; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 3000); }
+  function openModal()  { document.getElementById('modal').classList.add('show'); }
+  function closeModal() { document.getElementById('modal').classList.remove('show'); document.getElementById('editId').value = ''; document.getElementById('modalTitle').textContent = '➕ Add Custom Field'; }
+  function logout()     { localStorage.clear(); window.location.href = '../../login.html'; }
+  loadFields();
+</script>
+</body>
+</html>
