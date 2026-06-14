@@ -99,4 +99,4 @@ Building this project taught me a lot about how real-world SaaS applications are
 
 **Kainat Afzal**  
 BS Software Engineering — FAST-NUCES Lahore  
-[LinkedIn](https://linkedin.com/in/kainat-afzal) | [GitHub](https://github.com/kainat219)
+[LinkedIn](https://linkedin.com/in/kainat-afzal-) | [GitHub](https://github.com/kainat219)
